@@ -3,27 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Index</title>
+    <title>Bar Chart</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
         }
-        .assignment-link {
-            margin-bottom: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
-    {% load static %}
-    <h1>Assignments</h1>
-    <div id="assignment-list"></div>
+    <h1>Bar Chart</h1>
     <div id="charts"></div>
-
-    <script src="{% static '../static/assignments.js' %}"></script>
-    <script src="{% static '../static/charts.js' %}"></script>
+    
+    <script src="{% static 'script.js' %}"></script>
 </body>
 </html>

@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include  # make sure include is imported
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('backend.urls')),  # This line includes your app's URLs under the /api/ path
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
