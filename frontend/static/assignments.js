@@ -18,9 +18,11 @@ async function fetchAssignments(courseCode) {
             .enter()
             .append("div")
             .attr("class", "assignment-link")
-            .text(d => d.name);
+            .text(d => d.name)
+            .on("click", async (event, d) => {
+                window.location.href = `${encodeURIComponent(d.id)}`;
+            });
 
-        console.log("Assignments loaded:", assignmentsArray);
     } catch (error) {
         console.error('Error loading assignments:', error);
     }

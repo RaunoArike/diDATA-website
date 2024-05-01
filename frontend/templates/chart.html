@@ -13,11 +13,12 @@
     </style>
 </head>
 <body>
-    <h1>Assignment Name</h1>
-    <div id="assignment-list"></div>
+    {% load static %}
+    <h1 id="assignment-title"></h1>
+    <div id="charts"></div>
     <script type="text/javascript">
         var courseCode = "{{ course_code }}";
-        var assignmentId = "{{ assignment_id }}"
+        var assignmentId = "{{ assignment_id }}";
     </script>
     <script src="{% static '../static/charts.js' %}"></script>
 </body>

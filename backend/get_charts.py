@@ -17,30 +17,23 @@ def find_assignment(assignment_list, assignment_id):
     return Response({'error': 'Failed to retrieve assignment with the given id'}, status=500)
 
 
-def get_assignment_results(assignment):
+def get_assignment_results(assignment_id):
     header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
-    assignment_ids = [assignment["id"]]
-    assignment_names = [assignment["name"]]
-    assignment_results = []
 
     try:
-        for i, name in zip(assignment_ids, assignment_names):
-            prev_id = ""
-            result_ids = []
-            for k in range(10):
-                results = requests.get("https://edu.ans.app/api/v2/assignments/"+str(i)+"/results?items=100&page="+str(k+1), headers=header)
-                results_json = results.json()
-                if results_json==[] or results_json[0]['id'] == prev_id:
-                    break
-                prev_id = results_json[0]['id']
-                for res in results_json:
-                    if res["submitted_at"]:
-                        result_ids.append(res["id"])
-
-            if len(result_ids) > 0:
-                assignment_results.append({'name': name, 'result_ids': result_ids})
+        prev_id = ""
+        result_ids = []
+        for k in range(10):
+            results = requests.get("https://edu.ans.app/api/v2/assignments/"+str(assignment_id)+"/results?items=100&page="+str(k+1), headers=header)
+            results_json = results.json()
+            if results_json==[] or results_json[0]['id'] == prev_id:
+                break
+            prev_id = results_json[0]['id']
+            for res in results_json:
+                if res["submitted_at"]:
+                    result_ids.append(res["id"])
         
-        return assignment_results
+        return result_ids
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")
@@ -48,14 +41,14 @@ def get_assignment_results(assignment):
     
 
 
-def get_single_assignment_data(assignment_results, idx):
+def get_single_assignment_data(result_ids):
     header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
     numeral = []
     checked = []
     made = []
     question_scores = []
 
-    for res in assignment_results[idx]['result_ids']:
+    for res in result_ids:
         response = requests.get("https://edu.ans.app/api/v2/results/"+str(res), headers=header).json()
         if response["users"][0]["student_number"] != None:
             for submission in response["submissions"]:

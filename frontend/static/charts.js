@@ -4,7 +4,11 @@ async function loadData(courseCode, assignmentId) {
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }
-        const data = await response.json();
+        const resp = await response.json();
+        const data = resp.results;
+        const assignmentName = resp.assignment_name;
+
+        document.getElementById('assignment-title').textContent = assignmentName + " results:";
 
         const margin = {top: 20, right: 30, bottom: 40, left: 90},
               width = 960 - margin.left - margin.right,
@@ -80,3 +84,5 @@ async function loadData(courseCode, assignmentId) {
         console.error('Error loading or parsing data:', error);
     }
 }
+
+loadData(courseCode, assignmentId)

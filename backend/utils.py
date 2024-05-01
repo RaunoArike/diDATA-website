@@ -40,7 +40,7 @@ def analyse_data(questions_raw):
             full_marks_count = scores.count(1)
             full_marks.append(full_marks_count)
             
-            no_marks_count = scores.count(0)
+            no_marks_count = sum([score == 0 and attempt == True for (score, attempt) in zip(scores, attempted)])
             no_marks.append(no_marks_count)
             
             partial_marks_count = sum(0 < score < 1 for score in scores)
