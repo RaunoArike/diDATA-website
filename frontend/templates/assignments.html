@@ -3,22 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bar Chart</title>
+    <title>Index</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
         }
+        .assignment-link {
+            margin-bottom: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <h1>Assignment Name</h1>
+    {% load static %}
+    <h1>Here is a list of your assignments:</h1>
     <div id="assignment-list"></div>
     <script type="text/javascript">
         var courseCode = "{{ course_code }}";
-        var assignmentId = "{{ assignment_id }}"
     </script>
-    <script src="{% static '../static/charts.js' %}"></script>
+    <script src="{% static '../static/assignments.js' %}"></script>
 </body>
 </html>

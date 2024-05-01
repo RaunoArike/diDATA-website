@@ -1,6 +1,6 @@
-async function loadData(name) {
+async function loadData(courseCode, assignmentId) {
     try {
-        const response = await fetch('/api/data/');
+        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments/${encodeURIComponent(assignmentId)}`);
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }

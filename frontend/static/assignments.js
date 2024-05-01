@@ -1,41 +1,29 @@
-async function fetchAssignments() {
+async function fetchAssignments(courseCode) {
+    if (!courseCode) {
+        console.error('No course code provided.');
+        return;
+    }
+
     try {
-        const response = await fetch('/api/assignments/');
+        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments`);
         if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
+            throw new Error('Failed to load assignments: ' + response.statusText);
         }
-        const data = await response.json();
-        console.log("Fetched assignments data:", data);
-
-        const assignments = data.assignments;
-        console.log("Assignments object:", assignments);
-
-        const assignmentsArray = Object.keys(assignments).map(key => ({
-            name: assignments[key]
-        }));
-        console.log("Processed assignments array:", assignmentsArray);
+        const assignmentsArray = await response.json();
 
         const listElement = d3.select("#assignment-list");
+        listElement.selectAll("div").remove();
         const assignmentDivs = listElement.selectAll("div")
-                   .data(assignmentsArray)
-                   .enter()
-                   .append("div")
-                   .attr("class", "assignment-link")
-                   .text(d => d.name)
-                   .on("click", d => {
-                       window.location.href = `chart.html?assignment=${encodeURIComponent(d.name)}`;
-                   });
+            .data(assignmentsArray)
+            .enter()
+            .append("div")
+            .attr("class", "assignment-link")
+            .text(d => d.name);
 
-        console.log("Number of assignment divs added:", assignmentDivs.size());
-
-        assignmentDivs.on("click", d => {
-            console.log("Assignment clicked:", d.name);
-            loadData(d.name);
-        });
-
+        console.log("Assignments loaded:", assignmentsArray);
     } catch (error) {
         console.error('Error loading assignments:', error);
     }
 }
 
-fetchAssignments()
+fetchAssignments(courseCode)
