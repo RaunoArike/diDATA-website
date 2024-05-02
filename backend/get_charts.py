@@ -4,6 +4,7 @@ from django.conf import settings
 from .utils import natural_keys, group_data, analyse_data
 from rest_framework.response import Response
 from rest_framework import status
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +18,16 @@ def find_assignment(assignment_list, assignment_id):
     return Response({'error': 'Failed to retrieve assignment with the given id'}, status=500)
 
 
-def get_assignment_results(assignment_id):
+def get_assignment_results(course_code, assignment_id):
     header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
+
+    cache_key = f"ids_course_{course_code}_assignment_{assignment_id}"
+    cached_data = cache.get(cache_key)
+    logger.info("here1")
+
+    if cached_data is not None:
+        logger.info("here2")
+        return cached_data
 
     try:
         prev_id = ""
@@ -33,6 +42,8 @@ def get_assignment_results(assignment_id):
                 if res["submitted_at"]:
                     result_ids.append(res["id"])
         
+        cache.set(cache_key, result_ids)
+
         return result_ids
 
     except requests.exceptions.RequestException as e:
@@ -41,8 +52,15 @@ def get_assignment_results(assignment_id):
     
 
 
-def get_single_assignment_data(result_ids):
+def get_single_assignment_data(course_code, assignment_id, result_ids):
     header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
+
+    cache_key = f"data_course_{course_code}_assignment_{assignment_id}"
+    cached_data = cache.get(cache_key)
+
+    if cached_data is not None:
+        return cached_data
+    
     numeral = []
     checked = []
     made = []
@@ -58,6 +76,8 @@ def get_single_assignment_data(result_ids):
                 question_scores.append(float(submission["score"]) if submission["score"] != None else float('nan'))
     
     results = sort_and_organize_assignment_data(numeral, checked, made, question_scores)
+
+    cache.set(cache_key, results)
 
     return results
 

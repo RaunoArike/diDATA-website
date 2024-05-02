@@ -16,8 +16,8 @@ def chart_view(request, course_code, assignment_id):
     try:
         assignments = get_assignment_list(course_code)
         assignment = find_assignment(assignments, assignment_id)
-        result_ids = get_assignment_results(assignment["id"])
-        result_data = get_single_assignment_data(result_ids)
+        result_ids = get_assignment_results(course_code, assignment["id"])
+        result_data = get_single_assignment_data(course_code, assignment["id"], result_ids)
         return Response({"results": result_data, "assignment_name": assignment["name"]})
     
     except requests.exceptions.RequestException as e:

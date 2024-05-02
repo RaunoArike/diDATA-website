@@ -10,6 +10,7 @@ debugpy==1.8.0
 decorator==5.1.1
 distlib==0.3.8
 Django==5.0.3
+djangorestframework==3.15.1
 executing==2.0.1
 filelock==3.13.3
 fonttools==4.47.2
@@ -41,6 +42,7 @@ pybind11 @ file:///private/tmp/pybind11-20231211-90882-jkk8m2/pybind11-2.11.1
 Pygments==2.17.2
 pyparsing==3.1.1
 python-dateutil==2.8.2
+python-memcached==1.62
 pytz==2024.1
 pyzmq==25.1.2
 requests==2.31.0
