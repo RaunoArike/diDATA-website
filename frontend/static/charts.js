@@ -52,12 +52,12 @@ async function loadData(courseCode, assignmentId) {
 
         const color = d3.scaleOrdinal()
             .domain(subgroups)
-            // "# not checked", "# not attempted", "# partially correct", "# incorrect", "# correct"
+            // "# not checked", "# not attempted", "# incorrect", "# partially correct", "# correct"
             .range([
                 "#4a4a4a",
                 "#3178c6",
-                "#f4c542",
                 "#e36262",
+                "#f4c542",
                 "#4caf50"
             ]);
 

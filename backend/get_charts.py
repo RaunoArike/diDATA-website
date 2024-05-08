@@ -1,10 +1,14 @@
 import requests
 import logging
 from django.conf import settings
-from .utils import natural_keys, group_data, analyse_data
+from .utils import analyse_data
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.cache import cache
+from collections import defaultdict
+from .get_test_data import load_test_data
+from .models import AssignmentData, AssignmentResults
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +25,11 @@ def find_assignment(assignment_list, assignment_id):
 def get_assignment_results(course_code, assignment_id):
     header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
 
-    cache_key = f"ids_course_{course_code}_assignment_{assignment_id}"
-    cached_data = cache.get(cache_key)
-    logger.info("here1")
-
-    if cached_data is not None:
-        logger.info("here2")
-        return cached_data
+    try:
+        stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
+        return stored_data.get_result_ids()
+    except AssignmentResults.DoesNotExist:
+        pass
 
     try:
         prev_id = ""
@@ -42,7 +44,11 @@ def get_assignment_results(course_code, assignment_id):
                 if res["submitted_at"]:
                     result_ids.append(res["id"])
         
-        cache.set(cache_key, result_ids)
+        AssignmentResults.objects.update_or_create(
+            course_code=course_code,
+            assignment_id=assignment_id,
+            defaults={'result_ids': json.dumps(result_ids)}
+        )
 
         return result_ids
 
@@ -53,65 +59,37 @@ def get_assignment_results(course_code, assignment_id):
 
 
 def get_single_assignment_data(course_code, assignment_id, result_ids):
+    # return load_test_data()
+
     header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
 
-    cache_key = f"data_course_{course_code}_assignment_{assignment_id}"
-    cached_data = cache.get(cache_key)
-
-    if cached_data is not None:
-        return cached_data
+    try:
+        stored_data = AssignmentData.objects.get(course_code=course_code, assignment_id=assignment_id)
+        return stored_data.get_data()
+    except AssignmentData.DoesNotExist:
+        pass
     
-    numeral = []
-    checked = []
-    made = []
-    question_scores = []
+    try:
+        res_data = defaultdict(lambda: defaultdict(list))
 
-    for res in result_ids:
-        response = requests.get("https://edu.ans.app/api/v2/results/"+str(res), headers=header).json()
-        if response["users"][0]["student_number"] != None:
-            for submission in response["submissions"]:
-                numeral.append(submission["numeral"])
-                checked.append(submission["raw_score"] != None and submission["score"] != None)
-                made.append(not submission["none_above"])
-                question_scores.append(float(submission["score"]) if submission["score"] != None else float('nan'))
+        for res in result_ids:
+            response = requests.get("https://edu.ans.app/api/v2/results/"+str(res), headers=header).json()
+            if response["users"][0]["student_number"] != None:
+                for submission in response["submissions"]:
+                    res_data[submission["numeral"]]["checked"].append(submission["raw_score"] != None and submission["score"] != None)
+                    res_data[submission["numeral"]]["attempted"].append(not submission["none_above"])
+                    res_data[submission["numeral"]]["scores"].append(float(submission["score"]) if submission["score"] != None else float('nan'))
+        
+        results = analyse_data(res_data)
+
+        AssignmentData.objects.update_or_create(
+            course_code=course_code,
+            assignment_id=assignment_id,
+            defaults={'data': json.dumps(results)}
+        )
+
+        return results
     
-    results = sort_and_organize_assignment_data(numeral, checked, made, question_scores)
-
-    cache.set(cache_key, results)
-
-    return results
-
-
-
-def sort_and_organize_assignment_data(numeral, checked, made, question_scores):
-    """
-    Sorts and organizes assignment data based on question numerals.
-    
-    Parameters:
-        numeral (list): List of question identifiers.
-        checked (list): List indicating if questions were checked.
-        attempted (list): List indicating if questions were attempted.
-        question_scores (list): Scores for the questions.
-
-    Returns:
-        dict: A dictionary containing organized assignment data.
-    """
-
-    result_data = {
-        'question': [],
-        'scores': [],
-        'checked': [],
-        'attempted': []
-    }
-
-    idx = sorted(range(len(numeral)), key=lambda x: natural_keys(numeral[x]))
-    
-    result_data['question'] = [numeral[i] for i in idx]
-    result_data['scores'] = [question_scores[i] for i in idx]
-    result_data['checked'] = [checked[i] for i in idx]
-    result_data['attempted'] = [made[i] for i in idx]
-
-    result_data = group_data(result_data)
-    result_data = analyse_data(result_data)
-
-    return result_data
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request failed: {e}")
+        return Response({'error': 'An error occurred while processing your request.'}, status=500)
