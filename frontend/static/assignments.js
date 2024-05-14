@@ -4,8 +4,24 @@ async function fetchAssignments(courseCode) {
         return;
     }
 
+    const apiKey = localStorage.getItem('apiKey');
+
+    if (!apiKey) {
+        window.location.href = '/';
+        return;
+    }
+
     try {
-        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments`);
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        };
+
+        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments/`, {
+            method: 'GET',
+            headers: headers
+        });
+
         if (!response.ok) {
             throw new Error('Failed to load assignments: ' + response.statusText);
         }

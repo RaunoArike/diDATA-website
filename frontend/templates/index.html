@@ -10,22 +10,36 @@
             font-family: Arial, sans-serif;
             margin: 40px;
         }
-        .course-link {
-            margin-bottom: 5px;
-            padding: 10px;
-            font-size: 20px;
-            cursor: pointer;
-            transition: color 0.3s;
+        #api-key-input {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+            margin-bottom: 10px;
         }
-        .course-link:hover {
-            color: blue;
+        #submit-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #submit-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     {% load static %}
-    <h1>Welcome to diData! Here is a list of your active courses:</h1>
-    <div id="course-list"></div>
-    <script src="{% static '../static/courses.js' %}"></script>
+    <h1>Welcome to diDATA! Please enter your API key.</h1>
+    <div id="api-key-box">
+        <input type="text" id="api-key-input" placeholder="Enter your API key">
+        <button id="submit-button">Submit</button>
+        <p id="error-message" class="error-message" style="display: none;"></p>
+    </div>
+    <script src="{% static '../static/index.js' %}"></script>
 </body>
 </html>

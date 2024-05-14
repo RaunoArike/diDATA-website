@@ -22,8 +22,8 @@ def find_assignment(assignment_list, assignment_id):
     return Response({'error': 'Failed to retrieve assignment with the given id'}, status=500)
 
 
-def get_assignment_results(course_code, assignment_id):
-    header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
+def get_assignment_results(course_code, assignment_id, api_key):
+    header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
     try:
         stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
@@ -58,10 +58,10 @@ def get_assignment_results(course_code, assignment_id):
     
 
 
-def get_single_assignment_data(course_code, assignment_id, result_ids):
+def get_single_assignment_data(course_code, assignment_id, result_ids, api_key):
     # return load_test_data()
 
-    header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
+    header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
     try:
         stored_data = AssignmentData.objects.get(course_code=course_code, assignment_id=assignment_id)

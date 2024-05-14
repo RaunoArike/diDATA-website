@@ -7,8 +7,8 @@ from rest_framework import status
 logger = logging.getLogger(__name__)
 
 
-def get_assignment_list(course_code):
-    header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
+def get_assignment_list(course_code, api_key):
+    header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
     try:
         response = requests.get(f"https://edu.ans.app/api/v2/courses/{course_code}/assignments", headers=header)
 

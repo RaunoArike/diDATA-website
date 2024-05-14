@@ -1,6 +1,22 @@
 async function loadData(courseCode, assignmentId) {
     try {
-        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments/${encodeURIComponent(assignmentId)}`);
+        const apiKey = localStorage.getItem('apiKey');
+
+        if (!apiKey) {
+            window.location.href = '/';
+            return;
+        }
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        };
+
+        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments/${encodeURIComponent(assignmentId)}/`, {
+            method: 'GET',
+            headers: headers
+        });
+
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }

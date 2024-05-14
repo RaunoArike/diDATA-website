@@ -5,6 +5,7 @@ from .get_assignments import get_assignment_list
 from .get_charts import get_assignment_results, get_single_assignment_data, find_assignment
 from .get_courses import get_course_list
 from .get_test_data import load_test_data
+from .verify import verify_api_key
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,36 +15,56 @@ logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
 def chart_view(request, course_code, assignment_id):
-    try:
-        assignments = get_assignment_list(course_code)
-        assignment = find_assignment(assignments, assignment_id)
-        result_ids = get_assignment_results(course_code, assignment["id"])
-        result_data = get_single_assignment_data(course_code, assignment["id"], result_ids)
-        return Response({"results": result_data, "assignment_name": assignment["name"]})
+    auth_header = request.headers.get('Authorization')
     
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
-        return Response({'error': 'An error occurred while processing your request.'}, status=500)
+    if auth_header:
+        parts = auth_header.split()
+        
+        if len(parts) == 2 and parts[0] == 'Bearer':
+            key = parts[1]
+            try:
+                assignments = get_assignment_list(course_code, key)
+                assignment = find_assignment(assignments, assignment_id)
+                result_ids = get_assignment_results(course_code, assignment["id"], key)
+                result_data = get_single_assignment_data(course_code, assignment["id"], result_ids, key)
+                return Response({"results": result_data, "assignment_name": assignment["name"]})
+            
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request failed: {e}")
+                return Response({'error': 'An error occurred while processing your request.'}, status=500)
 
 
 @api_view(['GET'])
 def assignments_view(request, course_code):
-    try:
-        return Response(get_assignment_list(course_code))
+    auth_header = request.headers.get('Authorization')
     
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
-        return Response({'error': 'An error occurred while processing your request.'}, status=500)
+    if auth_header:
+        parts = auth_header.split()
+        
+        if len(parts) == 2 and parts[0] == 'Bearer':
+            key = parts[1]
+            try:
+                return Response(get_assignment_list(course_code, key))
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request failed: {e}")
+                return Response({'error': 'An error occurred while processing your request.'}, status=500)
+            # TODO: Return different error codes for auth errors and processing errors
 
 
 @api_view(['GET'])
 def courses_view(request):
-    try:
-        return Response(get_course_list())
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        parts = auth_header.split()
+        
+        if len(parts) == 2 and parts[0] == 'Bearer':
+            key = parts[1]
+            try:
+                return Response(get_course_list(key))
 
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
-        return Response({'error': 'An error occurred while processing your request.'}, status=500)
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request failed: {e}")
+                return Response({'error': 'An error occurred while processing your request.'}, status=500)
     
 
 @api_view(['GET'])
@@ -54,3 +75,24 @@ def test_data_view(request):
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")
         return Response({'error': 'An error occurred while processing your request.'}, status=500)
+
+
+@api_view(['POST'])
+def verification_view(request):
+    # Retrieve the Authorization header
+    auth_header = request.headers.get('Authorization')
+    
+    if auth_header:
+        parts = auth_header.split()
+        
+        if len(parts) == 2 and parts[0] == 'Bearer':
+            key = parts[1]
+
+            if verify_api_key(key):
+                return Response({"message": "API Key is valid."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Invalid API key."}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({"error": "Authorization header must be Bearer token."}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"error": "Authorization header is missing."}, status=status.HTTP_400_BAD_REQUEST)

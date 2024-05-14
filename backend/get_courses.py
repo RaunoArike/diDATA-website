@@ -7,8 +7,8 @@ from rest_framework import status
 logger = logging.getLogger(__name__)
 
 
-def get_course_list():
-    header = {"accept": "application/json", "Authorization": settings.AUTH_TOKEN}
+def get_course_list(api_key):
+    header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
     try:
         response = requests.get(f"https://edu.ans.app/api/v2/schools/2696/courses", headers=header)
         if response.status_code == 200:

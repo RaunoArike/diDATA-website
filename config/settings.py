@@ -114,8 +114,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend/static'),]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_TOKEN = "Bearer 3282958d5a3b9b408fc58d1b20f7c82696"
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
