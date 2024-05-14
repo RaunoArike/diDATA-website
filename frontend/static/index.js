@@ -8,6 +8,35 @@ async function checkExistingKey() {
 checkExistingKey()
 
 
+const infoButton = document.getElementById("info-button");
+const infoTooltip = document.getElementById("info-tooltip");
+
+let tooltipVisible = false;
+
+infoButton.addEventListener("click", function() {
+    if (!tooltipVisible) {
+        infoTooltip.style.display = "block";
+    } else {
+        infoTooltip.style.display = "none";
+    }
+    tooltipVisible = !tooltipVisible;
+});
+
+infoButton.addEventListener("mouseenter", function() {
+    if (!tooltipVisible) {
+        const rect = infoButton.getBoundingClientRect();
+        infoTooltip.style.top = rect.top - infoTooltip.offsetHeight - 5 + "px";
+        infoTooltip.style.left = rect.left + "px";
+        infoTooltip.style.display = "block";
+    }
+});
+
+infoButton.addEventListener("mouseleave", function() {
+    if (!tooltipVisible) {
+        infoTooltip.style.display = "none";
+    }
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     const apiKeyInput = document.getElementById("api-key-input");
     const submitButton = document.getElementById("submit-button");
