@@ -38,7 +38,7 @@ async function fetchCourses() {
                    .attr("class", "course-link")
                    .text(d => `${d.name} (${d.year})`)
                    .on("click", async (event, d) => {
-                       window.location.href = `courses/${encodeURIComponent(d.code)}/assignments`;
+                       window.location.href = `${encodeURIComponent(d.code)}/assignments`;
                    });
 
     } catch (error) {

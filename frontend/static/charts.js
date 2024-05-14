@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const downloadButton = document.getElementById('download-button');
+    downloadButton.addEventListener('click', function() {
+        const assignmentName = document.getElementById('assignment-title').textContent;
+        downloadChart(assignmentName);
+    });
+});
+
+
 async function loadData(courseCode, assignmentId) {
     try {
         const apiKey = localStorage.getItem('apiKey');
@@ -124,3 +133,35 @@ async function loadData(courseCode, assignmentId) {
 }
 
 loadData(courseCode, assignmentId)
+
+
+async function downloadChart(assignment_name) {
+    const svgElement = document.querySelector('svg');
+
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgURL = 'data:image/svg+xml;base64,' + btoa(svgData);
+
+    const img = new Image();
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = svgElement.clientWidth;
+        canvas.height = svgElement.clientHeight;
+        const context = canvas.getContext('2d');
+
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.drawImage(img, 0, 0);
+
+        const pngURL = canvas.toDataURL('image/png');
+        
+        // Create a download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngURL;
+        downloadLink.download = assignment_name + '.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+    img.src = svgURL;
+}
