@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        #api-key-input {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+            margin-bottom: 10px;
+        }
+        #submit-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #submit-button:hover {
+            background-color: #0056b3;
+        }
+        #info-button {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #info-tooltip {
+            position: absolute;
+            background-color: #f9f9f9;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            margin-left: 50px;
+        }
+        #info-tooltip p {
+            margin: 0;
+        }
+        #error-message, .tooltip {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    {% load static %}
+    <h1>Welcome to diDATA! Please enter your API key.</h1>
+    <div id="api-key-box">
+        <input type="text" id="api-key-input" placeholder="Enter your API key">
+        <button id="submit-button">Submit</button>
+        <p id="error-message" class="error-message" style="display: none;"></p>
+        <div id="info-button">?</div>
+        <div id="info-tooltip" class="tooltip" style="display: none;">
+            <p>You need to use your ANS API key to access diDATA. To obtain an API key, follow the <a href="https://support.ans.app/hc/en-us/articles/4411711239697-Create-API-token">instructions in the ANS API documentation.</a></p>
+        </div>
+    </div>
+    <script src="{% static '../static/login.js' %}"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from collections import defaultdict
-from .utils import analyse_data
+from .utils import analyse_by_question
 
 
 def load_test_data():
@@ -20,4 +20,4 @@ def load_test_data():
         res[key]["attempted"] = [True] * len(values)
         res[key]["scores"] = values
 
-    return analyse_data(res)
+    return analyse_by_question(res)

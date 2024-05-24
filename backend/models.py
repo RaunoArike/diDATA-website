@@ -5,16 +5,17 @@ import json
 class AssignmentData(models.Model):
     course_code = models.CharField(max_length=100)
     assignment_id = models.CharField(max_length=100)
-    data = models.TextField()  # Storing the serialized result data as text
+    # Using JSONField to store results_by_question and results_by_exercise
+    data = models.JSONField(default=dict)
 
     class Meta:
         unique_together = ('course_code', 'assignment_id')
 
-    def get_data(self):
-        return json.loads(self.data)
+    def get_data(self, key):
+        return self.data.get(key, None)
 
-    def set_data(self, data):
-        self.data = json.dumps(data)
+    def set_data(self, key, value):
+        self.data[key] = value
         self.save()
 
 

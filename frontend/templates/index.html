@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
+    <title>Course Dashboard</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
+            display: flex;
         }
-        #api-key-input {
-            padding: 8px;
+        #side-menu {
+            flex: 1;
+            margin-right: 20px;
+        }
+        #charts-container {
+            flex: 4;
+        }
+        .link, #course-select, #assignment-select {
+            display: block;
+            margin-bottom: 20px;
+            padding: 10px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-            margin-bottom: 10px;
+            cursor: pointer;
         }
-        #submit-button {
+        .link:hover, #course-select:hover, #assignment-select:hover {
+            color: blue;
+        }
+        #toggle-button {
             padding: 10px 20px;
             font-size: 16px;
             background-color: #007bff;
@@ -26,54 +36,47 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 20px;
+            display: block;
         }
-        #submit-button:hover {
+        #toggle-button:hover {
             background-color: #0056b3;
         }
-        #info-button {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+        #download-button {
+            padding: 10px 20px;
+            font-size: 16px;
             background-color: #007bff;
             color: white;
-            text-align: center;
-            line-height: 30px;
-            font-size: 20px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        #info-tooltip {
-            position: absolute;
-            background-color: #f9f9f9;
-            color: #333;
-            border: 1px solid #ccc;
+            border: none;
             border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-            margin-left: 50px;
+            cursor: pointer;
+            display: block;
+            margin-top: 20px;
         }
-        #info-tooltip p {
-            margin: 0;
-        }
-        #error-message, .tooltip {
-            display: none;
+        #download-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     {% load static %}
-    <h1>Welcome to diDATA! Please enter your API key.</h1>
-    <div id="api-key-box">
-        <input type="text" id="api-key-input" placeholder="Enter your API key">
-        <button id="submit-button">Submit</button>
-        <p id="error-message" class="error-message" style="display: none;"></p>
-        <div id="info-button">?</div>
-        <div id="info-tooltip" class="tooltip" style="display: none;">
-            <p>You need to use your ANS API key to access diDATA. To obtain an API key, follow the <a href="https://support.ans.app/hc/en-us/articles/4411711239697-Create-API-token">instructions in the ANS API documentation.</a></p>
-        </div>
+    <div id="side-menu">
+        <h1>Select a Course:</h1>
+        <select id="course-select">
+            <!-- Options will be dynamically populated -->
+        </select>
+        <h1>Select an Assignment:</h1>
+        <select id="assignment-select" disabled>
+            <!-- Options will be dynamically populated -->
+        </select>
     </div>
-    <script src="{% static '../static/index.js' %}"></script>
+    <div id="charts-container">
+        <h1 id="assignment-title"></h1>
+        <div id="charts"></div>
+        <button id="toggle-button" style="display: none;">Show Question Data</button>
+        <button id="download-button" style="display: none;">Download</button>
+    </div>
+
+    <script type="module" src="{% static 'index.js' %}"></script>
 </body>
 </html>

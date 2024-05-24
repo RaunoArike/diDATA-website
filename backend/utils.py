@@ -1,4 +1,4 @@
-def analyse_data(questions_raw):
+def analyse_by_question(questions_raw):
     res = {}
 
     for question_key, question_data in questions_raw.items():
@@ -38,3 +38,25 @@ def analyse_data(questions_raw):
         res[question_key] = aggr_data
     
     return res
+
+
+def analyse_by_exercise(questions_data):
+    from collections import defaultdict
+    import itertools
+
+    questions_data = analyse_by_question(questions_data)
+
+    merged_results = defaultdict(lambda: defaultdict(list))
+
+    for key, data in questions_data.items():
+        prefix = ''.join(itertools.takewhile(str.isdigit, key))
+
+        for subkey, sublist in data.items():
+            if merged_results[prefix][subkey]:
+                merged_results[prefix][subkey] = [sum(x) for x in zip(merged_results[prefix][subkey], sublist)]
+            else:
+                merged_results[prefix][subkey] = sublist
+
+    print(merged_results)
+
+    return {k: dict(v) for k, v in merged_results.items()}

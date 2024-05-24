@@ -1,23 +1,14 @@
-async function fetchAssignments(courseCode) {
-    if (!courseCode) {
-        console.error('No course code provided.');
-        return;
-    }
-
-    const apiKey = localStorage.getItem('apiKey');
-
-    if (!apiKey) {
-        window.location.href = '/';
-        return;
-    }
-
+export async function fetchAssignments(courseId) {
     try {
+        const apiKey = localStorage.getItem('apiKey');
+        const assignmentSelect = document.getElementById('assignment-select');
+
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`
         };
 
-        const response = await fetch(`/api/courses/${encodeURIComponent(courseCode)}/assignments/`, {
+        const response = await fetch(`/api/courses/${encodeURIComponent(courseId)}/assignments/`, {
             method: 'GET',
             headers: headers
         });
@@ -25,23 +16,23 @@ async function fetchAssignments(courseCode) {
         if (!response.ok) {
             throw new Error('Failed to load assignments: ' + response.statusText);
         }
-        const assignmentsArray = await response.json();
+        const assignments = await response.json();
 
-        const listElement = d3.select("#assignment-list");
-        listElement.selectAll("div").remove();
-        const assignmentDivs = listElement.selectAll("div")
-            .data(assignmentsArray)
-            .enter()
-            .append("div")
-            .attr("class", "assignment-link")
-            .text(d => d.name)
-            .on("click", async (event, d) => {
-                window.location.href = `${encodeURIComponent(d.id)}`;
-            });
+        assignmentSelect.innerHTML = '';
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = 'Select an assignment';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        assignmentSelect.appendChild(defaultOption);
 
+        assignments.forEach(assignment => {
+            const option = document.createElement('option');
+            option.value = assignment.id;
+            option.textContent = assignment.name;
+            assignmentSelect.appendChild(option);
+        });
+        assignmentSelect.disabled = false;
     } catch (error) {
         console.error('Error loading assignments:', error);
     }
 }
-
-fetchAssignments(courseCode)

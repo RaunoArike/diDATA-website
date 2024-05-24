@@ -1,11 +1,7 @@
-async function fetchCourses() {
+export async function fetchCourses() {
     try {
         const apiKey = localStorage.getItem('apiKey');
-
-        if (!apiKey) {
-            window.location.href = '/';
-            return;
-        }
+        const courseSelect = document.getElementById('course-select');
 
         const headers = {
             'Content-Type': 'application/json',
@@ -22,28 +18,22 @@ async function fetchCourses() {
         }
         const courses = await response.json();
 
-        const courseArray = Object.keys(courses).map(key => ({
-            name: courses[key].name,
-            code: courses[key].id,
-            year: courses[key].year
-        }));
+        // Clear the dropdown and add a disabled 'Select a course' option as the first choice
+        courseSelect.innerHTML = ''; // Clear any existing options
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = 'Select a course';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        courseSelect.appendChild(defaultOption);
 
-        console.log(courseArray)
-
-        const listElement = d3.select("#course-list");
-        const courseDivs = listElement.selectAll("div")
-                   .data(courseArray)
-                   .enter()
-                   .append("div")
-                   .attr("class", "course-link")
-                   .text(d => `${d.name} (${d.year})`)
-                   .on("click", async (event, d) => {
-                       window.location.href = `${encodeURIComponent(d.code)}/assignments`;
-                   });
-
+        // Populate dropdown with courses fetched from the server
+        for (let key in courses) {
+            const option = document.createElement('option');
+            option.value = courses[key].id;
+            option.textContent = `${courses[key].name} (${courses[key].year})`;
+            courseSelect.appendChild(option);
+        }
     } catch (error) {
         console.error('Error loading courses:', error);
     }
 }
-
-fetchCourses()

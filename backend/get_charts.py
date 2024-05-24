@@ -1,7 +1,7 @@
 import requests
 import logging
 from django.conf import settings
-from .utils import analyse_data
+from .utils import analyse_by_question, analyse_by_exercise
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.cache import cache
@@ -65,7 +65,9 @@ def get_single_assignment_data(course_code, assignment_id, result_ids, api_key):
 
     try:
         stored_data = AssignmentData.objects.get(course_code=course_code, assignment_id=assignment_id)
-        return stored_data.get_data()
+        results_by_question = stored_data.data['results_by_question']
+        results_by_exercise = stored_data.data['results_by_exercise']
+        return results_by_question, results_by_exercise
     except AssignmentData.DoesNotExist:
         pass
     
@@ -80,15 +82,16 @@ def get_single_assignment_data(course_code, assignment_id, result_ids, api_key):
                     res_data[submission["numeral"]]["attempted"].append(not submission["none_above"])
                     res_data[submission["numeral"]]["scores"].append(float(submission["score"]) if submission["score"] != None else float('nan'))
         
-        results = analyse_data(res_data)
+        results_by_question = analyse_by_question(res_data)
+        results_by_exercise = analyse_by_exercise(res_data)
 
         AssignmentData.objects.update_or_create(
             course_code=course_code,
             assignment_id=assignment_id,
-            defaults={'data': json.dumps(results)}
+            defaults={'data': {'results_by_question': results_by_question, 'results_by_exercise': results_by_exercise}}
         )
 
-        return results
+        return results_by_question, results_by_exercise
     
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")
