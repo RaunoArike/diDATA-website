@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Dashboard</title>
+  <link rel="stylesheet" href="{% static 'myapp/static/css/styles.css' %}">
+</head>
+<body>
+  <nav id="navbar">
+    <div id="logo">
+      <a href="/">
+        <img src="{% static 'myapp/static/img/logo.png' %}" alt="Logo">
+      </a>
+    </div>
+    <div id="nav-links">
+      <a href="/settings">
+        <img src="{% static 'myapp/static/img/settings-icon.png' %}" alt="Settings" class="nav-icon">
+      </a>
+      <a href="/profile">
+        <img src="{% static 'myapp/static/img/profile-icon.png' %}" alt="Profile" class="nav-icon">
+      </a>
+    </div>
+  </nav>
+  <div id="root"></div>
+  <script src="{% static 'myapp/static/js/main.js' %}"></script>
+</body>
+</html>
