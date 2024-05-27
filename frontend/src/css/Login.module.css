@@ -1,0 +1,60 @@
+.loginContainer {
+    margin: 40px;
+}
+
+.apiKeyInput {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+.submitButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #5D6CC9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submitButton:hover {
+    background-color: #0056b3;
+}
+
+.infoButton {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #5D6CC9;
+    color: white;
+    text-align: center;
+    line-height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.infoTooltip {
+    position: absolute;
+    background-color: #f9f9f9;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    margin-left: 50px;
+}
+
+.infoTooltip p {
+    margin: 0;
+}
+
+.errorMessage, .tooltip {
+    display: none;
+}

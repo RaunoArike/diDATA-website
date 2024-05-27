@@ -1,0 +1,26 @@
+  .sideMenu {
+    grid-row: 2;
+    background-color: #fff;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+  }
+  
+  .chartContainer {
+    grid-row: 2;
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin: 10px;
+    height: 85vh;
+  }
+  
+  @media (max-width: 768px) {
+    .appContainer {
+      grid-template-rows: auto auto 1fr;
+      grid-template-columns: 1fr;
+    }
+  
+    #charts-container {
+      grid-row: 3;
+    }
+  }
+  

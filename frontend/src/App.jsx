@@ -1,39 +1,29 @@
-import React, { useState } from 'react';
-import CourseSelector from './components/CourseSelector';
-import AssignmentSelector from './components/AssignmentSelector';
-import ChartComponent from './components/ChartComponent';
-import { downloadChart } from './downloadChart';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './components/Home';
+import Settings from './components/Settings';
+import Login from './components/Login';
+import Profile from './components/Profile';
+import Navbar from './components/Navbar'; // Import Navbar component
+import './App.css'
 
 const App = () => {
-  const [selectedCourse, setSelectedCourse] = useState('');
-  const [selectedAssignment, setSelectedAssignment] = useState('');
-
-  const handleSelectCourse = (courseCode) => {
-    console.log('Selected course:', courseCode);
-    setSelectedCourse(courseCode);
-    setSelectedAssignment(''); // Reset assignment when a new course is selected
-  };
-
-  const handleSelectAssignment = (assignmentId) => {
-    setSelectedAssignment(assignmentId);
-  };
-
   return (
-    <div className="container">
-      <div id="side-menu" className="container">
-        <h1>Select a Course:</h1>
-        <CourseSelector onSelectCourse={handleSelectCourse} />
-        {selectedCourse && (
-          <>
-            <h1>Select an Assignment:</h1>
-            <AssignmentSelector courseCode={selectedCourse} onSelectAssignment={handleSelectAssignment} />
-          </>
-        )}
+    <Router>
+      <div id='appContainer'>
+        <div id='navbar'>
+          <Navbar />
+        </div>
+        <div id='content'>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </div>
       </div>
-      <div id="charts-container" className="container">
-        {selectedAssignment && <ChartComponent courseCode={selectedCourse} assignmentId={selectedAssignment} />}
-      </div>
-    </div>
+    </Router>
   );
 };
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
+import styles from '../css/ChartComponent.module.css';
 import { loadCharts } from '../charts';
-import 'chart.js/auto'; // Required for tree-shaking
 
 const ChartComponent = ({ courseCode, assignmentId }) => {
     const [chartData, setChartData] = useState(null);
@@ -31,7 +32,8 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         const datasets = Object.keys(rawData[labels[0]]).map((key, index) => ({
             label: key,
             data: labels.map(label => rawData[label][key][0]),
-            backgroundColor: ['#4a4a4a', '#3178c6', '#e36262', '#f4c542', '#4caf50'][index % 5]
+            // not checked, not attempted, 0% correct, partially correct, 100% correct
+            backgroundColor: ['#B9E5EF', '#871751', '#FD3C08', '#FFB715', '#5D6CC9'][index % 5]
         }));
 
         return { labels, datasets };
@@ -41,30 +43,64 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         setIsShowingExerciseData(!isShowingExerciseData);
     };
 
+    const title = isShowingExerciseData ? assignmentName + ' results by exercise' : assignmentName + ' results by question';
+
+    const downloadChart = () => {
+        const link = document.createElement('a');
+        link.download = `${title}.png`;
+        link.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png');
+        link.click();
+    };
+
     const chartOptions = {
         responsive: true,
         plugins: {
             legend: {
-                position: 'right'
+                position: 'right',
+                labels: {
+                    font: {
+                        size: 16
+                    }
+                }
             },
             title: {
                 display: true,
-                text: assignmentName + ' results:'
+                text: title,
+                font: {
+                    size: 24
+                }
             }
         },
         scales: {
             x: {
+                stacked: true,
                 title: {
                     display: true,
-                    text: 'Categories'
+                    font: {
+                        size: 18
+                    }
+                },
+                ticks: {
+                    font: {
+                        size: 14
+                    }
                 }
             },
             y: {
+                stacked: true,
                 title: {
                     display: true,
-                    text: 'Scores'
+                    text: 'Number of participants',
+                    font: {
+                        size: 18
+                    }
                 },
-                beginAtZero: true
+                ticks: {
+                    font: {
+                        size: 14
+                    },
+                    beginAtZero: true
+                }
             }
         }
     };
@@ -77,8 +113,16 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 data={processData(isShowingExerciseData ? chartData.rawExerciseData : chartData.rawQuestionData)}
                 options={chartOptions}
             />
-            <button onClick={toggleData}>
-                {isShowingExerciseData ? 'Show Question Data' : 'Show Exercise Data'}
+            <div className={styles.toggleContainer}>
+                <label className={styles.toggleLabel}>Exercises</label>
+                <label className={styles.switch}>
+                    <input type="checkbox" checked={!isShowingExerciseData} onChange={toggleData} />
+                    <span className={`${styles.slider} ${styles.round}`}></span>
+                </label>
+                <label className={styles.toggleLabel}>Questions</label>
+            </div>
+            <button className={styles.downloadButton} onClick={downloadChart}>
+                Download Chart
             </button>
         </div>
     );

@@ -29,11 +29,11 @@ def analyse_by_question(questions_raw):
 
         aggr_data = {}
 
-        aggr_data['# not checked'] = not_checked
-        aggr_data['# not attempted'] = not_attempted
-        aggr_data['# 0% correct'] = no_marks
-        aggr_data['# partially correct'] = partial_marks
-        aggr_data['# 100% correct'] = full_marks
+        aggr_data['# Not checked'] = not_checked
+        aggr_data['# Not attempted'] = not_attempted
+        aggr_data['# Incorrect'] = no_marks
+        aggr_data['# Partially correct'] = partial_marks
+        aggr_data['# Fully correct'] = full_marks
 
         res[question_key] = aggr_data
     

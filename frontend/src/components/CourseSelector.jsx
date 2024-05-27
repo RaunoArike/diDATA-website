@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchCourses } from '../courses';
+import styles from '../css/Selector.module.css';
 
 const CourseSelector = ({ onSelectCourse }) => {
     const [courses, setCourses] = useState([]);
@@ -13,7 +14,7 @@ const CourseSelector = ({ onSelectCourse }) => {
     }, []);
 
     return (
-        <select onChange={e => onSelectCourse(e.target.value)}>
+        <select className={styles.courseSelect} onChange={e => onSelectCourse(e.target.value)}>
             <option value="">Select a course</option>
             {courses.map(course => (
                 <option key={course.name} value={course.id}>{course.name}</option>

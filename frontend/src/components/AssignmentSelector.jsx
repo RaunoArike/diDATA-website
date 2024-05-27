@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAssignments } from '../assignments';
+import styles from '../css/Selector.module.css';
 
 const AssignmentSelector = ({ courseCode, onSelectAssignment }) => {
     const [assignments, setAssignments] = useState([]);
@@ -15,7 +16,7 @@ const AssignmentSelector = ({ courseCode, onSelectAssignment }) => {
     }, [courseCode]);
 
     return (
-        <select onChange={e => onSelectAssignment(e.target.value)}>
+        <select className={styles.assignmentSelect} onChange={e => onSelectAssignment(e.target.value)}>
             <option value="">Select an assignment</option>
             {assignments.map(assignment => (
                 <option key={assignment.id} value={assignment.id}>{assignment.name}</option>
