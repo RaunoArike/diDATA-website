@@ -25,15 +25,16 @@ def find_assignment(assignment_list, assignment_id):
 def get_assignment_results(course_code, assignment_id, api_key):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-    try:
-        stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
-        return stored_data.get_result_ids()
-    except AssignmentResults.DoesNotExist:
-        pass
+    # try:
+    #     stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
+    #     return stored_data.get_result_ids(), stored_data.get_grades()
+    # except AssignmentResults.DoesNotExist:
+    #     pass
 
     try:
         prev_id = ""
         result_ids = []
+        grades = []
         for k in range(10):
             results = requests.get("https://edu.ans.app/api/v2/assignments/"+str(assignment_id)+"/results?items=100&page="+str(k+1), headers=header)
             results_json = results.json()
@@ -43,14 +44,18 @@ def get_assignment_results(course_code, assignment_id, api_key):
             for res in results_json:
                 if res["submitted_at"]:
                     result_ids.append(res["id"])
+                    grades.append(res["grade"])
         
         AssignmentResults.objects.update_or_create(
             course_code=course_code,
             assignment_id=assignment_id,
-            defaults={'result_ids': json.dumps(result_ids)}
+            defaults={
+                'result_ids': json.dumps(result_ids),
+                'grades': json.dumps(grades)
+            }
         )
 
-        return result_ids
+        return result_ids, grades
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")

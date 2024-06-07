@@ -7,7 +7,7 @@ import { loadCharts } from '../charts';
 const ChartComponent = ({ courseCode, assignmentId }) => {
     const [chartData, setChartData] = useState(null);
     const [assignmentName, setAssignmentName] = useState('');
-    const [isShowingExerciseData, setIsShowingExerciseData] = useState(true);
+    const [view, setView] = useState('exercise');
 
     useEffect(() => {
         const fetchChartData = async () => {
@@ -15,10 +15,12 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 const resp = await loadCharts(courseCode, assignmentId);
                 const rawExerciseData = resp.results_by_exercise;
                 const rawQuestionData = resp.results_by_question;
+                const rawGrades = resp.grades;
                 setAssignmentName(resp.assignment_name);
                 setChartData({
                     rawExerciseData,
-                    rawQuestionData
+                    rawQuestionData,
+                    rawGrades
                 });
             } catch (error) {
                 console.error('Error loading chart data:', error);
@@ -28,27 +30,67 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     }, [courseCode, assignmentId]);
 
     const processData = (rawData) => {
+        if (!rawData || Object.keys(rawData).length === 0) {
+            return { labels: [], datasets: [] };
+        }
+    
         const labels = Object.keys(rawData);
-        const datasets = Object.keys(rawData[labels[0]]).map((key, index) => ({
+        const colorMapping = {
+            '# not checked': '#B9E5EF',
+            '# not attempted': '#871751',
+            '# 0% correct': '#FD3C08',
+            '# partially correct': '#FFB715',
+            '# 100% correct': '#5D6CC9'
+        };
+    
+        const datasets = Object.keys(rawData[labels[0]] || {}).map((key) => ({
             label: key,
             data: labels.map(label => rawData[label][key][0]),
-            // not checked, not attempted, 0% correct, partially correct, 100% correct
-            backgroundColor: ['#B9E5EF', '#871751', '#FD3C08', '#FFB715', '#5D6CC9'][index % 5]
+            backgroundColor: colorMapping[key] || '#000000' // Default to black if no match found
         }));
-
+    
         return { labels, datasets };
-    };
+    };    
 
-    const toggleData = () => {
-        setIsShowingExerciseData(!isShowingExerciseData);
+    const processGrades = (grades) => {
+        const gradeCounts = Array(10).fill(0);
+        console.log(grades);
+        grades.forEach(grade => {
+            const index = Math.floor(grade);
+            if (index < 10) {
+                gradeCounts[index]++;
+            } else {
+                gradeCounts[9]++;
+            }
+        });
+        return {
+            labels: Array.from({ length: 10 }, (_, i) => `${i} - ${i+1}`),
+            datasets: [
+                {
+                    label: 'Number of students',
+                    data: gradeCounts,
+                    backgroundColor: '#5D6CC9'
+                }
+            ]
+        };
     };
-
-    const title = isShowingExerciseData ? assignmentName + ' results by exercise' : assignmentName + ' results by question';
 
     const downloadChart = () => {
+        const chart = document.getElementsByTagName('canvas')[0];
         const link = document.createElement('a');
-        link.download = `${title}.png`;
-        link.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png');
+        const whiteBackground = document.createElement('canvas');
+        const context = whiteBackground.getContext('2d');
+        
+        whiteBackground.width = chart.width;
+        whiteBackground.height = chart.height;
+        
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, whiteBackground.width, whiteBackground.height);
+        
+        context.drawImage(chart, 0, 0);
+    
+        link.download = `${assignmentName} results by ${view}.png`;
+        link.href = whiteBackground.toDataURL('image/png');
         link.click();
     };
 
@@ -65,7 +107,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             },
             title: {
                 display: true,
-                text: title,
+                text: view === 'metrics' ? `${assignmentName} metrics` : `${assignmentName} results by ${view}`,
                 font: {
                     size: 24
                 }
@@ -73,7 +115,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         },
         scales: {
             x: {
-                stacked: true,
+                stacked: view !== 'metrics',
                 title: {
                     display: true,
                     font: {
@@ -87,10 +129,10 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 }
             },
             y: {
-                stacked: true,
+                stacked: view !== 'metrics',
                 title: {
                     display: true,
-                    text: 'Number of participants',
+                    text: 'Number of students',
                     font: {
                         size: 18
                     }
@@ -109,18 +151,15 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
 
     return (
         <div>
+            <div className={styles.menu}>
+                <button className={view === 'metrics' ? styles.active : ''} onClick={() => setView('metrics')}>Metrics</button>
+                <button className={view === 'exercise' ? styles.active : ''} onClick={() => setView('exercise')}>Exercises</button>
+                <button className={view === 'question' ? styles.active : ''} onClick={() => setView('question')}>Questions</button>
+            </div>
             <Bar
-                data={processData(isShowingExerciseData ? chartData.rawExerciseData : chartData.rawQuestionData)}
+                data={view === 'metrics' ? processGrades(chartData.rawGrades) : processData(view === 'exercise' ? chartData.rawExerciseData : chartData.rawQuestionData)}
                 options={chartOptions}
             />
-            <div className={styles.toggleContainer}>
-                <label className={styles.toggleLabel}>Exercises</label>
-                <label className={styles.switch}>
-                    <input type="checkbox" checked={!isShowingExerciseData} onChange={toggleData} />
-                    <span className={`${styles.slider} ${styles.round}`}></span>
-                </label>
-                <label className={styles.toggleLabel}>Questions</label>
-            </div>
             <button className={styles.downloadButton} onClick={downloadChart}>
                 Download Chart
             </button>

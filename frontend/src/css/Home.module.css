@@ -5,7 +5,7 @@
     height: 100%;
     width: 100%;
   }
-
+  
   .content {
     display: contents; /* Allows nested grids to work properly */
   }
@@ -23,6 +23,17 @@
     background-color: #f9f9f9;
     margin: 10px;
     height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-y: auto;
+  }
+  
+  .assignmentsContainer {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+    overflow-y: auto;
   }
   
   @media (max-width: 768px) {
@@ -31,8 +42,17 @@
       grid-template-columns: 1fr;
     }
   
-    #charts-container {
+    .chartContainer {
       grid-row: 3;
+    }
+  
+    .assignmentsContainer {
+      flex-direction: column;
+    }
+  
+    .assignmentList {
+      width: 100%;
+      margin: 10px 0;
     }
   }
   

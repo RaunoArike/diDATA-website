@@ -22,7 +22,8 @@ class AssignmentData(models.Model):
 class AssignmentResults(models.Model):
     course_code = models.CharField(max_length=100)
     assignment_id = models.CharField(max_length=100)
-    result_ids = models.TextField()  # Storing the serialized list of result IDs
+    result_ids = models.TextField()
+    grades = models.TextField()
 
     class Meta:
         unique_together = ('course_code', 'assignment_id')
@@ -32,4 +33,11 @@ class AssignmentResults(models.Model):
 
     def set_result_ids(self, data):
         self.result_ids = json.dumps(data)
+        self.save()
+
+    def get_grades(self):
+        return json.loads(self.grades)
+
+    def set_grades(self, data):
+        self.grades = json.dumps(data)
         self.save()

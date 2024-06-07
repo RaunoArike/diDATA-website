@@ -1,0 +1,29 @@
+.assignmentList {
+    width: 45%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    overflow-y: auto;
+  }
+  
+  .assignmentList h3 {
+    margin-bottom: 10px;
+  }
+  
+  .assignmentList ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .assignmentList li {
+    padding: 5px 0;
+    color: #5D6CC9;
+  }
+
+  .assignmentList li:hover {
+    color: #0056b3;
+    text-decoration: underline;
+    cursor: pointer;
+  }
