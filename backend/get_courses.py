@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def get_course_list(api_key):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
     try:
-        response = requests.get(f"https://edu.ans.app/api/v2/schools/2696/courses", headers=header)
+        response = requests.get(f"https://edu.ans.app/api/v2/schools/2696/courses", headers=header, timeout=(5, 14))
         if response.status_code == 200:
             return response.json()
         else:

@@ -1,15 +1,3 @@
-.appContainer {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    grid-template-columns: 500px 1fr;
-    height: 100%;
-    width: 100%;
-  }
-
-  .content {
-    display: contents; /* Allows nested grids to work properly */
-  }
-  
   .sideMenu {
     grid-row: 2;
     background-color: #fff;
