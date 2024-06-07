@@ -2,13 +2,13 @@ SAML_SETTINGS = {
     'strict': True,
     'debug': False,
     'sp': {
-        'entityId': 'https://bb3e-85-253-68-86.ngrok-free.app',
+        'entityId': 'https://funky-usefully-gannet.ngrok-free.app',
         'assertionConsumerService': {
-            'url': 'https://bb3e-85-253-68-86.ngrok-free.app/saml/callback',
+            'url': 'https://funky-usefully-gannet.ngrok-free.app/saml/callback',
             'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
         },
         'singleLogoutService': {
-            'url': 'https://bb3e-85-253-68-86.ngrok-free.app/saml/logout',
+            'url': 'https://funky-usefully-gannet.ngrok-free.app/saml/logout',
             'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
         },
         'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
