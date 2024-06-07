@@ -7,10 +7,6 @@ SAML_SETTINGS = {
             'url': 'https://bb3e-85-253-68-86.ngrok-free.app/saml/callback',
             'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
         },
-        'assertionConsumerService': {
-            'url': 'https://bb3e-85-253-68-86.ngrok-free.app/saml/login',
-            'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-        },
         'singleLogoutService': {
             'url': 'https://bb3e-85-253-68-86.ngrok-free.app/saml/logout',
             'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
