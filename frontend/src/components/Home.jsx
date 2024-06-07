@@ -31,20 +31,22 @@ const Home = () => {
   };
 
   return (
-    <div className={styles.content}>
-      <div id="side-menu" className={styles.sideMenu}>
-        <h1>Welcome, <i>user</i>!</h1>
-        <h3>Select a course:</h3>
-        <CourseSelector onSelectCourse={handleSelectCourse} />
-        {selectedCourse && (
-          <>
-            <h3>Select an assignment:</h3>
-            <AssignmentSelector courseCode={selectedCourse} onSelectAssignment={handleSelectAssignment} />
-          </>
-        )}
-      </div>
-      <div className={styles.chartContainer}>
-        {selectedAssignment && <ChartComponent courseCode={selectedCourse} assignmentId={selectedAssignment} />}
+    <div className={styles.appContainer}>
+      <div className={styles.content}>
+        <div id="side-menu" className={styles.sideMenu}>
+          <h1>Welcome, <i>user</i>!</h1>
+          <h3>Select a course:</h3>
+          <CourseSelector onSelectCourse={handleSelectCourse} />
+          {selectedCourse && (
+            <>
+              <h3>Select an assignment:</h3>
+              <AssignmentSelector courseCode={selectedCourse} onSelectAssignment={handleSelectAssignment} />
+            </>
+          )}
+        </div>
+        <div className={styles.chartContainer}>
+          {selectedAssignment && <ChartComponent courseCode={selectedCourse} assignmentId={selectedAssignment} />}
+        </div>
       </div>
     </div>
   );

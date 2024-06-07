@@ -25,7 +25,7 @@ const Login = () => {
             };
 
             const response = await fetch(`http://localhost:8000/api/courses/`, {
-                method: 'POST',
+                method: 'GET',
                 headers: headers,
             });
 
@@ -69,7 +69,8 @@ const Login = () => {
                 {errorMessage && (
                     <p id="error-message" className={styles.errorMessage}>{errorMessage}</p>
                 )}
-                <div
+            </div>
+            <div
                     className={styles.infoButton}
                     onClick={toggleTooltip}
                 >
@@ -85,7 +86,6 @@ const Login = () => {
                         </p>
                     </div>
                 )}
-            </div>
         </div>
     );
 };
