@@ -10,19 +10,15 @@ import './App.css'
 const App = () => {
   return (
     <Router>
-      <div id='appContainer'>
-        <div id='navbar'>
-          <Navbar />
-        </div>
-        <div id='content'>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </div>
+      <div id='navbar'>
+        <Navbar />
       </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
     </Router>
   );
 };

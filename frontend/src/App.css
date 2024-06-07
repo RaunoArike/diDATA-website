@@ -1,3 +1,4 @@
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -8,19 +9,7 @@ body {
   flex-direction: column;
 }
 
-.appContainer {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: 500px 1fr;
-  height: 100%;
-  width: 100%;
-}
-
 .navbar {
   grid-column: 1 / span 2;
   color: #fff;
-}
-
-.content {
-  display: contents; /* Allows nested grids to work properly */
 }

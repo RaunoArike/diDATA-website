@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="https://eipdev.ewi.tudelft.nl/saml/saml2/idp/metadata.php">
+  <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:Extensions>
+      <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+        <mdui:DisplayName xml:lang="en">EIPDev - SAML Test server</mdui:DisplayName>
+        <mdui:Description xml:lang="en">An IdP that mimics the TU Delft SAML server, for testing purposes. Contact eip-ewi@tudelft.nl for more info.</mdui:Description>
+      </mdui:UIInfo>
+    </md:Extensions>
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIIFQzCCA6ugAwIBAgIUd/itG7/3i8vo7/qTQz8sM/KiEcYwDQYJKoZIhvcNAQELBQAwgbAxCzAJBgNVBAYTAk5MMRUwEwYDVQQIDAxadWlkIEhvbGxhbmQxDjAMBgNVBAcMBURlbGZ0MScwJQYDVQQKDB5EZWxmdCBVbml2ZXJzaXR5IG9mIFRlY2hub2xvZ3kxDjAMBgNVBAsMBUVFTUNTMR4wHAYDVQQDDBVlaXBkZXYuZXdpLnR1ZGVsZnQubmwxITAfBgkqhkiG9w0BCQEWEmVpcC1ld2lAdHVkZWxmdC5ubDAeFw0xOTA5MTIxMjUwNTFaFw0yNDA5MTExMjUwNTFaMIGwMQswCQYDVQQGEwJOTDEVMBMGA1UECAwMWnVpZCBIb2xsYW5kMQ4wDAYDVQQHDAVEZWxmdDEnMCUGA1UECgweRGVsZnQgVW5pdmVyc2l0eSBvZiBUZWNobm9sb2d5MQ4wDAYDVQQLDAVFRU1DUzEeMBwGA1UEAwwVZWlwZGV2LmV3aS50dWRlbGZ0Lm5sMSEwHwYJKoZIhvcNAQkBFhJlaXAtZXdpQHR1ZGVsZnQubmwwggGiMA0GCSqGSIb3DQEBAQUAA4IBjwAwggGKAoIBgQDFZm5gj06tsbgkKn3gtGDqdHbgzMyfK5/FoRt2obdHN+aN8Hubgps75nc9jJ9Uqjsc2MZ6/w3u0rOpV4iDGb+j6ykt3RXFrDVQo17pSpX4/X1+MNqTjvwinD5bYkg7OhET2keYsQy2jqVh7MEDpcsnVsRU4enfGbflcXMYVbz2KerSp8NeijqscV6nhA/MQIB/iAjd8VLph0pj8xwvKVXu7mqIin4iKoCS1yafMyDgLz2yfHLoUrhKmUvyOwOTVt9OIeQo4AlkL87b+fNy7IpXtRgZDcC5FgQqQvRAPQ1Rv/1mv+fQT5MndJWuXmuFqEO9IdFWQhH9WVmpQyR0A7TBJ6Xk1weilZyVY+DNX7F7oEQw0TplF2OWhfOMgbUrPOX1Y/qjihMIkaGFgPwaQ35TPWdCWaMLmsJEupVUr1Jx6gh5fWoH8l5oaHalcS4vsUpNQ9u4pOcDEvJ5OqVCUKdIb3z4SQyet73d3YzEKX33dBqF8xN1I9rzBz8DQc7QMQ8CAwEAAaNTMFEwHQYDVR0OBBYEFOW1P3duY4TRWazADYM6VqLu5kTjMB8GA1UdIwQYMBaAFOW1P3duY4TRWazADYM6VqLu5kTjMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggGBAERkdVg4ylo2Kmi8l9Ql75RXd/C6+Qt6PK5VQvy+3ucqpRai0HEuaJPn7K9J1uES1w8HRygaJEKKdF84v/2GlJ2L5b8/7egh8ifc2s4taBaTNHAWuGvHTBSavpB+dUzmK13Ce2Q2kPdWph9PsDsAsaUCgsdKkRcxxXaA4CRMT3pIfRkX23GgvtQI5bPwwMnDm2XdEQaRgOb3hRaRsxIbuEnmfOvNzIwxSNIqdWE6r9A+9ESQh1HWCYVZtq4YF+WzScSv8Dn1G2acRPU9inW4iHE3zK7AUzQem/8gWPjf4GbE4cIOjWAdRw1W8+oiB/w8IpIxm26INz5sXISsbc+G73GPshE/uY2VczYUXR+H8ARjL1l7oBYVRW7PevUKgzudv8g2Mz8nhJb8jQSBngZiYnGQ7wCPE1QBJvvDsDloqbURxgL/99kJeKpq5stNWp7XR7JZevc/XChtEbYuGgZv4ApXmvv2r5JnGwgFDEzHxP33kP8g7GoHMEBYk3jgxs1DDg==</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="encryption">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIIFQzCCA6ugAwIBAgIUd/itG7/3i8vo7/qTQz8sM/KiEcYwDQYJKoZIhvcNAQELBQAwgbAxCzAJBgNVBAYTAk5MMRUwEwYDVQQIDAxadWlkIEhvbGxhbmQxDjAMBgNVBAcMBURlbGZ0MScwJQYDVQQKDB5EZWxmdCBVbml2ZXJzaXR5IG9mIFRlY2hub2xvZ3kxDjAMBgNVBAsMBUVFTUNTMR4wHAYDVQQDDBVlaXBkZXYuZXdpLnR1ZGVsZnQubmwxITAfBgkqhkiG9w0BCQEWEmVpcC1ld2lAdHVkZWxmdC5ubDAeFw0xOTA5MTIxMjUwNTFaFw0yNDA5MTExMjUwNTFaMIGwMQswCQYDVQQGEwJOTDEVMBMGA1UECAwMWnVpZCBIb2xsYW5kMQ4wDAYDVQQHDAVEZWxmdDEnMCUGA1UECgweRGVsZnQgVW5pdmVyc2l0eSBvZiBUZWNobm9sb2d5MQ4wDAYDVQQLDAVFRU1DUzEeMBwGA1UEAwwVZWlwZGV2LmV3aS50dWRlbGZ0Lm5sMSEwHwYJKoZIhvcNAQkBFhJlaXAtZXdpQHR1ZGVsZnQubmwwggGiMA0GCSqGSIb3DQEBAQUAA4IBjwAwggGKAoIBgQDFZm5gj06tsbgkKn3gtGDqdHbgzMyfK5/FoRt2obdHN+aN8Hubgps75nc9jJ9Uqjsc2MZ6/w3u0rOpV4iDGb+j6ykt3RXFrDVQo17pSpX4/X1+MNqTjvwinD5bYkg7OhET2keYsQy2jqVh7MEDpcsnVsRU4enfGbflcXMYVbz2KerSp8NeijqscV6nhA/MQIB/iAjd8VLph0pj8xwvKVXu7mqIin4iKoCS1yafMyDgLz2yfHLoUrhKmUvyOwOTVt9OIeQo4AlkL87b+fNy7IpXtRgZDcC5FgQqQvRAPQ1Rv/1mv+fQT5MndJWuXmuFqEO9IdFWQhH9WVmpQyR0A7TBJ6Xk1weilZyVY+DNX7F7oEQw0TplF2OWhfOMgbUrPOX1Y/qjihMIkaGFgPwaQ35TPWdCWaMLmsJEupVUr1Jx6gh5fWoH8l5oaHalcS4vsUpNQ9u4pOcDEvJ5OqVCUKdIb3z4SQyet73d3YzEKX33dBqF8xN1I9rzBz8DQc7QMQ8CAwEAAaNTMFEwHQYDVR0OBBYEFOW1P3duY4TRWazADYM6VqLu5kTjMB8GA1UdIwQYMBaAFOW1P3duY4TRWazADYM6VqLu5kTjMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggGBAERkdVg4ylo2Kmi8l9Ql75RXd/C6+Qt6PK5VQvy+3ucqpRai0HEuaJPn7K9J1uES1w8HRygaJEKKdF84v/2GlJ2L5b8/7egh8ifc2s4taBaTNHAWuGvHTBSavpB+dUzmK13Ce2Q2kPdWph9PsDsAsaUCgsdKkRcxxXaA4CRMT3pIfRkX23GgvtQI5bPwwMnDm2XdEQaRgOb3hRaRsxIbuEnmfOvNzIwxSNIqdWE6r9A+9ESQh1HWCYVZtq4YF+WzScSv8Dn1G2acRPU9inW4iHE3zK7AUzQem/8gWPjf4GbE4cIOjWAdRw1W8+oiB/w8IpIxm26INz5sXISsbc+G73GPshE/uY2VczYUXR+H8ARjL1l7oBYVRW7PevUKgzudv8g2Mz8nhJb8jQSBngZiYnGQ7wCPE1QBJvvDsDloqbURxgL/99kJeKpq5stNWp7XR7JZevc/XChtEbYuGgZv4ApXmvv2r5JnGwgFDEzHxP33kP8g7GoHMEBYk3jgxs1DDg==</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://eipdev.ewi.tudelft.nl/saml/saml2/idp/SingleLogoutService.php"/>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://eipdev.ewi.tudelft.nl/saml/saml2/idp/SSOService.php"/>
+  </md:IDPSSODescriptor>
+  <md:ContactPerson contactType="technical">
+    <md:GivenName>EIP</md:GivenName>
+    <md:SurName>Administrators</md:SurName>
+    <md:EmailAddress>mailto:eip-ewi@tudelft.nl</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>

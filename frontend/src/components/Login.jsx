@@ -25,7 +25,7 @@ const Login = () => {
             };
 
             const response = await fetch(`http://localhost:8000/api/courses/`, {
-                method: 'POST',
+                method: 'GET',
                 headers: headers,
             });
 
