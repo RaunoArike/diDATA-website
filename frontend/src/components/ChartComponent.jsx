@@ -8,6 +8,11 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     const [chartData, setChartData] = useState(null);
     const [assignmentName, setAssignmentName] = useState('');
     const [view, setView] = useState('exercise');
+    const [averageGrade, setAverageGrade] = useState(null);
+    const [medianGrade, setMedianGrade] = useState(null);
+    const [highestGrade, setHighestGrade] = useState(null);
+    const [lowestGrade, setLowestGrade] = useState(null);
+    const [stdDevGrade, setStdDevGrade] = useState(null);
 
     useEffect(() => {
         const fetchChartData = async () => {
@@ -22,12 +27,34 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                     rawQuestionData,
                     rawGrades
                 });
+                calculateStatistics(rawGrades);
             } catch (error) {
                 console.error('Error loading chart data:', error);
             }
         };
         fetchChartData();
     }, [courseCode, assignmentId]);
+
+    const calculateStatistics = (grades) => {
+        if (!grades || grades.length === 0) return;
+
+        const total = grades.reduce((sum, grade) => sum + Number(grade), 0);
+        const avg = total / grades.length;
+        const sortedGrades = [...grades].sort((a, b) => a - b);
+        const mid = Math.floor(sortedGrades.length / 2);
+        const median = sortedGrades.length % 2 !== 0 ? Number(sortedGrades[mid]) : (Number(sortedGrades[mid - 1]) + Number(sortedGrades[mid])) / 2;
+        const highest = Math.max(...grades);
+        const lowest = Math.min(...grades);
+
+        const variance = grades.reduce((sum, grade) => sum + Math.pow(Number(grade) - avg, 2), 0) / grades.length;
+        const stdDev = Math.sqrt(variance);
+
+        setAverageGrade(avg.toFixed(2));
+        setMedianGrade(median.toFixed(2));
+        setHighestGrade(highest.toFixed(2));
+        setLowestGrade(lowest.toFixed(2));
+        setStdDevGrade(stdDev.toFixed(2));
+    };
 
     const processData = (rawData) => {
         if (!rawData || Object.keys(rawData).length === 0) {
@@ -54,7 +81,6 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
 
     const processGrades = (grades) => {
         const gradeCounts = Array(10).fill(0);
-        console.log(grades);
         grades.forEach(grade => {
             const index = Math.floor(grade);
             if (index < 10) {
@@ -89,7 +115,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         
         context.drawImage(chart, 0, 0);
     
-        link.download = `${assignmentName} results by ${view}.png`;
+        link.download = view === 'metrics' ? `${assignmentName} grade distribution.png` : `${assignmentName} results by ${view}.png`;
         link.href = whiteBackground.toDataURL('image/png');
         link.click();
     };
@@ -107,7 +133,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             },
             title: {
                 display: true,
-                text: view === 'metrics' ? `${assignmentName} metrics` : `${assignmentName} results by ${view}`,
+                text: view === 'metrics' ? `${assignmentName} grade distribution` : `${assignmentName} results by ${view}`,
                 font: {
                     size: 24
                 }
@@ -118,6 +144,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 stacked: view !== 'metrics',
                 title: {
                     display: true,
+                    text: view === 'metrics' ? 'Grade' : '',
                     font: {
                         size: 18
                     }
@@ -156,6 +183,34 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 <button className={view === 'exercise' ? styles.active : ''} onClick={() => setView('exercise')}>Exercises</button>
                 <button className={view === 'question' ? styles.active : ''} onClick={() => setView('question')}>Questions</button>
             </div>
+            {view === 'metrics' && (
+                <div className={styles.statisticsContainer}>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Participants</p>
+                        <p className={styles.statisticValue}>{chartData.rawGrades.length}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Average Grade</p>
+                        <p className={styles.statisticValue}>{averageGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Median Grade</p>
+                        <p className={styles.statisticValue}>{medianGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Highest Grade</p>
+                        <p className={styles.statisticValue}>{highestGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Lowest Grade</p>
+                        <p className={styles.statisticValue}>{lowestGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Standard Deviation</p>
+                        <p className={styles.statisticValue}>{stdDevGrade}</p>
+                    </div>
+                </div>
+            )}
             <Bar
                 data={view === 'metrics' ? processGrades(chartData.rawGrades) : processData(view === 'exercise' ? chartData.rawExerciseData : chartData.rawQuestionData)}
                 options={chartOptions}

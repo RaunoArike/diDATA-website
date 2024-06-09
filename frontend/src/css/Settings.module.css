@@ -48,3 +48,87 @@
 .removeButton:hover {
     background-color: #871751;
 }
+
+.settingsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.apiKeyBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 50px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+}
+
+.toggleButton,
+.removeButton {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.toggleButton {
+    background-color: #5D6CC9;
+    color: white;
+}
+
+.toggleButton:hover {
+    background-color: #5D6CC9;
+}
+
+.removeButton {
+    background-color: #871751;
+    color: white;
+}
+
+.removeButton:hover {
+    background-color: #871751;
+}
+
+/* Dark mode styles */
+.dark .settingsContainer {
+    background-color: #333;
+    color: #f5f5f5;
+}
+
+.dark .apiKeyBox {
+    background-color: #444;
+    border: 1px solid #555;
+    color: #f5f5f5;
+}
+
+.dark .toggleButton,
+.dark .removeButton {
+    color: #333;
+}
+
+.dark .toggleButton {
+    background-color: #8797ed;
+}
+
+.dark .toggleButton:hover {
+    background-color: #8797ed;
+}
+
+.dark .removeButton {
+    background-color: #b83870;
+}
+
+.dark .removeButton:hover {
+    background-color: #b83870;
+}

@@ -27,3 +27,16 @@
     text-decoration: underline;
     cursor: pointer;
   }
+
+  .dark .assignmentList {
+    background-color: #444;
+    border: 1px solid #555;
+}
+
+.dark .assignmentList li {
+    color: #8797ed;
+}
+
+.dark .assignmentList li:hover {
+    color: #0056b3;
+}

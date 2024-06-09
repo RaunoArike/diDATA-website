@@ -9,3 +9,35 @@
 .link:hover, .courseSelect:hover, .assignmentSelect:hover {
     color: #5D6CC9;
 }
+
+.dark .loginContainer {
+    background-color: #333;
+}
+
+.dark .apiKeyInput {
+    background-color: #444;
+    border: 1px solid #555;
+    color: #f5f5f5;
+}
+
+.dark .submitButton {
+    background-color: #8797ed;
+}
+
+.dark .submitButton:hover {
+    background-color: #0056b3;
+}
+
+.dark .infoButton {
+    background-color: #8797ed;
+}
+
+.dark .infoTooltip {
+    background-color: #444;
+    border: 1px solid #555;
+    color: #f5f5f5;
+}
+
+.dark .errorMessage {
+    color: #b83870;
+}
