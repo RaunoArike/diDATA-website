@@ -6,6 +6,7 @@ class AssignmentData(models.Model):
     course_code = models.CharField(max_length=100)
     assignment_id = models.CharField(max_length=100)
     # Using JSONField to store results_by_question and results_by_exercise
+    # The JSONField structure is used instead of separate fields because results_by_question and results_by_exercise are usually accessed as whole units, making this approach more efficient
     data = models.JSONField(default=dict)
 
     class Meta:
@@ -24,6 +25,7 @@ class AssignmentResults(models.Model):
     assignment_id = models.CharField(max_length=100)
     result_ids = models.TextField()
     grades = models.TextField()
+    last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('course_code', 'assignment_id')

@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import styles from '../css/ChartComponent.module.css';
 import { loadCharts } from '../charts';
+import { updateChartData } from '../update';
 
 const ChartComponent = ({ courseCode, assignmentId }) => {
     const [chartData, setChartData] = useState(null);
@@ -13,6 +14,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     const [highestGrade, setHighestGrade] = useState(null);
     const [lowestGrade, setLowestGrade] = useState(null);
     const [stdDevGrade, setStdDevGrade] = useState(null);
+    const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
         const fetchChartData = async () => {
@@ -27,6 +29,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                     rawQuestionData,
                     rawGrades
                 });
+                setLastUpdated(resp.last_updated);
                 calculateStatistics(rawGrades);
             } catch (error) {
                 console.error('Error loading chart data:', error);
@@ -61,22 +64,30 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             return { labels: [], datasets: [] };
         }
     
-        const labels = Object.keys(rawData);
+        const keys = Object.keys(rawData);
+        const labels = [
+            '# Fully correct',
+            '# Incorrect',
+            '# Not attempted',
+            '# Not checked',
+            '# Partially correct'
+        ];
+    
         const colorMapping = {
-            '# not checked': '#B9E5EF',
-            '# not attempted': '#871751',
-            '# 0% correct': '#FD3C08',
-            '# partially correct': '#FFB715',
-            '# 100% correct': '#5D6CC9'
+            '# Fully correct': '#5D6CC9',
+            '# Incorrect': '#FD3C08',
+            '# Not attempted': '#871751',
+            '# Not checked': '#B9E5EF',
+            '# Partially correct': '#FFB715'
         };
     
-        const datasets = Object.keys(rawData[labels[0]] || {}).map((key) => ({
-            label: key,
-            data: labels.map(label => rawData[label][key][0]),
-            backgroundColor: colorMapping[key] || '#000000' // Default to black if no match found
+        const datasets = labels.map(label => ({
+            label: label,
+            data: keys.map(key => rawData[key][label] ? rawData[key][label][0] : 0),
+            backgroundColor: colorMapping[label]
         }));
     
-        return { labels, datasets };
+        return { labels: keys, datasets };
     };    
 
     const processGrades = (grades) => {
@@ -118,6 +129,25 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         link.download = view === 'metrics' ? `${assignmentName} grade distribution.png` : `${assignmentName} results by ${view}.png`;
         link.href = whiteBackground.toDataURL('image/png');
         link.click();
+    };
+
+    const updateChartDataHandler = async () => {
+        try {
+            const resp = await updateChartData(courseCode, assignmentId);
+            const rawExerciseData = resp.results_by_exercise;
+            const rawQuestionData = resp.results_by_question;
+            const rawGrades = resp.grades;
+            setAssignmentName(resp.assignment_name);
+            setChartData({
+                rawExerciseData,
+                rawQuestionData,
+                rawGrades
+            });
+            setLastUpdated(resp.last_updated);
+            calculateStatistics(rawGrades);
+        } catch (error) {
+            console.error('Error updating chart data:', error);
+        }
     };
 
     const chartOptions = {
@@ -183,41 +213,47 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 <button className={view === 'exercise' ? styles.active : ''} onClick={() => setView('exercise')}>Exercises</button>
                 <button className={view === 'question' ? styles.active : ''} onClick={() => setView('question')}>Questions</button>
             </div>
-            {view === 'metrics' && (
-                <div className={styles.statisticsContainer}>
-                    <div className={styles.statisticBox}>
-                        <p className={styles.statisticLabel}>Participants</p>
-                        <p className={styles.statisticValue}>{chartData.rawGrades.length}</p>
-                    </div>
-                    <div className={styles.statisticBox}>
-                        <p className={styles.statisticLabel}>Average Grade</p>
-                        <p className={styles.statisticValue}>{averageGrade}</p>
-                    </div>
-                    <div className={styles.statisticBox}>
-                        <p className={styles.statisticLabel}>Median Grade</p>
-                        <p className={styles.statisticValue}>{medianGrade}</p>
-                    </div>
-                    <div className={styles.statisticBox}>
-                        <p className={styles.statisticLabel}>Highest Grade</p>
-                        <p className={styles.statisticValue}>{highestGrade}</p>
-                    </div>
-                    <div className={styles.statisticBox}>
-                        <p className={styles.statisticLabel}>Lowest Grade</p>
-                        <p className={styles.statisticValue}>{lowestGrade}</p>
-                    </div>
-                    <div className={styles.statisticBox}>
-                        <p className={styles.statisticLabel}>Standard Deviation</p>
-                        <p className={styles.statisticValue}>{stdDevGrade}</p>
-                    </div>
+            <div className={styles.statisticsContainer}>
+                <div className={styles.statisticBox}>
+                    <p className={styles.statisticLabel}>Participants</p>
+                    <p className={styles.statisticValue}>{chartData.rawGrades.length}</p>
                 </div>
-            )}
+                <div className={styles.statisticBox}>
+                    <p className={styles.statisticLabel}>Average Grade</p>
+                    <p className={styles.statisticValue}>{averageGrade}</p>
+                </div>
+                <div className={styles.statisticBox}>
+                    <p className={styles.statisticLabel}>Median Grade</p>
+                    <p className={styles.statisticValue}>{medianGrade}</p>
+                </div>
+                <div className={styles.statisticBox}>
+                    <p className={styles.statisticLabel}>Highest Grade</p>
+                    <p className={styles.statisticValue}>{highestGrade}</p>
+                </div>
+                <div className={styles.statisticBox}>
+                    <p className={styles.statisticLabel}>Lowest Grade</p>
+                    <p className={styles.statisticValue}>{lowestGrade}</p>
+                </div>
+                <div className={styles.statisticBox}>
+                    <p className={styles.statisticLabel}>Standard Deviation</p>
+                    <p className={styles.statisticValue}>{stdDevGrade}</p>
+                </div>
+            </div>
             <Bar
                 data={view === 'metrics' ? processGrades(chartData.rawGrades) : processData(view === 'exercise' ? chartData.rawExerciseData : chartData.rawQuestionData)}
                 options={chartOptions}
             />
-            <button className={styles.downloadButton} onClick={downloadChart}>
-                Download Chart
-            </button>
+            <div className={styles.buttonContainer}>
+                <button className={styles.downloadButton} onClick={downloadChart}>
+                    Download Chart
+                </button>
+                <button className={styles.downloadButton} onClick={updateChartDataHandler}>
+                    Update Chart
+                </button>
+            </div>
+            {lastUpdated && (
+                <p className={styles.lastUpdated}>Last updated:<br></br>{new Date(lastUpdated).toLocaleString()}</p>
+            )}
         </div>
     );
 };

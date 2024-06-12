@@ -3,7 +3,7 @@
     min-width: 300px;
 }
 
-.downloadButton {
+.downloadButton, .updateButton {
     padding: 10px 20px;
     font-size: 16px;
     background-color: #5D6CC9;
@@ -15,8 +15,21 @@
     margin-top: 20px;
 }
 
-.downloadButton:hover {
+.downloadButton:hover, .updateButton:hover {
     background-color: #0056b3;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.lastUpdated {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #777;
+    text-align: right;
 }
 
 .toggleContainer {
@@ -107,23 +120,6 @@ input:checked + .slider:before {
     background-color: #ddd;
 }
 
-.downloadButton {
-    background-color: #5D6CC9;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    transition: background-color 0.3s ease;
-}
-
-.downloadButton:hover {
-    background-color: #4a56a5;
-}
-
 .statisticsContainer {
     display: flex;
     justify-content: center;
@@ -151,33 +147,33 @@ input:checked + .slider:before {
     margin: 5px 0 0 0;
 }
 
-.dark .charts-container {
+body.dark .charts-container {
     background-color: #333;
 }
 
-.dark .downloadButton {
+body.dark .downloadButton {
     background-color: #8797ed;
 }
 
-.dark .downloadButton:hover {
+body.dark .downloadButton:hover {
     background-color: #4a56a5;
 }
 
-.dark .menu {
+body.dark .menu {
     background-color: #444;
     border-bottom: 1px solid #555;
 }
 
-.dark .menu button.active,
-.dark .menu button:hover {
+body.dark .menu button.active,
+body.dark .menu button:hover {
     background-color: #555;
 }
 
-.dark .statisticBox {
+body.dark .statisticBox {
     background-color: #444;
     border: 1px solid #555;
 }
 
-.dark .statisticLabel {
+body.dark .statisticLabel {
     color: #b83870;
 }

@@ -1,10 +1,8 @@
 import requests
 import logging
-from django.conf import settings
 from .utils import analyse_by_question, analyse_by_exercise
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.cache import cache
 from collections import defaultdict
 from .get_test_data import load_test_data
 from .models import AssignmentData, AssignmentResults
@@ -22,14 +20,15 @@ def find_assignment(assignment_list, assignment_id):
     return Response({'error': 'Failed to retrieve assignment with the given id'}, status=500)
 
 
-def get_assignment_results(course_code, assignment_id, api_key):
+def get_assignment_results(course_code, assignment_id, api_key, update=False):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-    # try:
-    #     stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
-    #     return stored_data.get_result_ids(), stored_data.get_grades()
-    # except AssignmentResults.DoesNotExist:
-    #     pass
+    if not update:
+        try:
+            stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
+            return stored_data.get_result_ids(), stored_data.get_grades(), stored_data.last_updated
+        except AssignmentResults.DoesNotExist:
+            pass
 
     try:
         prev_id = ""
@@ -54,8 +53,9 @@ def get_assignment_results(course_code, assignment_id, api_key):
                 'grades': json.dumps(grades)
             }
         )
+        stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
 
-        return result_ids, grades
+        return result_ids, grades, stored_data.last_updated
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")
@@ -63,18 +63,19 @@ def get_assignment_results(course_code, assignment_id, api_key):
     
 
 
-def get_single_assignment_data(course_code, assignment_id, result_ids, api_key):
+def get_single_assignment_data(course_code, assignment_id, result_ids, api_key, update=False):
     # return load_test_data()
 
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-    try:
-        stored_data = AssignmentData.objects.get(course_code=course_code, assignment_id=assignment_id)
-        results_by_question = stored_data.data['results_by_question']
-        results_by_exercise = stored_data.data['results_by_exercise']
-        return results_by_question, results_by_exercise
-    except AssignmentData.DoesNotExist:
-        pass
+    if not update:
+        try:
+            stored_data = AssignmentData.objects.get(course_code=course_code, assignment_id=assignment_id)
+            results_by_question = stored_data.data['results_by_question']
+            results_by_exercise = stored_data.data['results_by_exercise']
+            return results_by_question, results_by_exercise
+        except AssignmentData.DoesNotExist:
+            pass
     
     try:
         res_data = defaultdict(lambda: defaultdict(list))
