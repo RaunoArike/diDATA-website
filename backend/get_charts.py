@@ -4,7 +4,6 @@ from .analyse_data import analyse_by_question, analyse_by_exercise
 from rest_framework.response import Response
 from rest_framework import status
 from collections import defaultdict
-from .get_test_data import load_test_data
 from .models import AssignmentData, AssignmentResults
 import json
 
@@ -23,17 +22,20 @@ def find_assignment(assignment_list, assignment_id):
 def get_assignment_results(course_code, assignment_id, api_key, update=False):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-    if not update:
-        try:
-            stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
-            return stored_data.get_result_ids(), stored_data.get_grades(), stored_data.last_updated
-        except AssignmentResults.DoesNotExist:
-            pass
+    # if not update:
+    #     try:
+    #         stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
+    #         return stored_data.get_result_ids(), stored_data.get_grades(), stored_data.last_updated
+    #     except AssignmentResults.DoesNotExist:
+    #         pass
 
     try:
         prev_id = ""
         result_ids = []
-        grades = []
+        grades = {
+            "Pass": [],
+            "Fail": []
+        }
         for k in range(10):
             results = requests.get("https://edu.ans.app/api/v2/assignments/"+str(assignment_id)+"/results?items=100&page="+str(k+1), headers=header)
             results_json = results.json()
@@ -43,7 +45,12 @@ def get_assignment_results(course_code, assignment_id, api_key, update=False):
             for res in results_json:
                 if res.get("submitted_at"):
                     result_ids.append(res["id"])
-                    grades.append(res["grade"])
+                    grade = res["grade"]
+                    print(float(grade))
+                    if float(grade) >= 5.75:
+                        grades["Pass"].append(grade)
+                    else:
+                        grades["Fail"].append(grade)
         
         AssignmentResults.objects.update_or_create(
             course_code=course_code,
@@ -64,8 +71,6 @@ def get_assignment_results(course_code, assignment_id, api_key, update=False):
 
 
 def get_single_assignment_data(course_code, assignment_id, result_ids, api_key, update=False):
-    # return load_test_data()
-
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
     if not update:

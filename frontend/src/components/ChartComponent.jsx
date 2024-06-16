@@ -47,17 +47,18 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     }, [courseCode, assignmentId]);
 
     const calculateStatistics = (grades) => {
-        if (!grades || grades.length === 0) return;
+        const allGrades = [...grades.Pass, ...grades.Fail];
+        if (!allGrades || allGrades.length === 0) return;
 
-        const total = grades.reduce((sum, grade) => sum + Number(grade), 0);
-        const avg = total / grades.length;
-        const sortedGrades = [...grades].sort((a, b) => a - b);
+        const total = allGrades.reduce((sum, grade) => sum + Number(grade), 0);
+        const avg = total / allGrades.length;
+        const sortedGrades = [...allGrades].sort((a, b) => a - b);
         const mid = Math.floor(sortedGrades.length / 2);
         const median = sortedGrades.length % 2 !== 0 ? Number(sortedGrades[mid]) : (Number(sortedGrades[mid - 1]) + Number(sortedGrades[mid])) / 2;
-        const highest = Math.max(...grades);
-        const lowest = Math.min(...grades);
+        const highest = Math.max(...allGrades);
+        const lowest = Math.min(...allGrades);
 
-        const variance = grades.reduce((sum, grade) => sum + Math.pow(Number(grade) - avg, 2), 0) / grades.length;
+        const variance = allGrades.reduce((sum, grade) => sum + Math.pow(Number(grade) - avg, 2), 0) / allGrades.length;
         const stdDev = Math.sqrt(variance);
 
         setAverageGrade(avg.toFixed(2));
@@ -72,21 +73,6 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             return Math.round(parseInt(hex, 16) + factor * (parseInt(endColor.slice(1).match(/.{2}/g)[i], 16) - parseInt(hex, 16)));
         });
         return `#${result.map(val => val.toString(16).padStart(2, '0')).join('')}`;
-    };
-
-    const processPartialMarks = (partialMarks) => {
-        const interpolatedColors = {};
-        Object.keys(partialMarks).forEach(mark => {
-            const numericMark = parseFloat(mark);
-            let color;
-            if (numericMark <= 0.5) {
-                color = interpolateColor('#FD3C08', '#FFB715', numericMark / 0.5);
-            } else {
-                color = interpolateColor('#FFB715', '#5D6CC9', (numericMark - 0.5) / 0.5);
-            }
-            interpolatedColors[numericMark] = color;
-        });
-        return interpolatedColors;
     };
 
     const processData = (rawData) => {
@@ -143,22 +129,39 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     };
 
     const processGrades = (grades) => {
-        const gradeCounts = Array(10).fill(0);
-        grades.forEach(grade => {
+        const passCounts = Array(10).fill(0);
+        const failCounts = Array(10).fill(0);
+
+        grades.Pass.forEach(grade => {
             const index = Math.floor(grade);
             if (index < 10) {
-                gradeCounts[index]++;
+                passCounts[index]++;
             } else {
-                gradeCounts[9]++;
+                passCounts[9]++;
             }
         });
+
+        grades.Fail.forEach(grade => {
+            const index = Math.floor(grade);
+            if (index < 10) {
+                failCounts[index]++;
+            } else {
+                failCounts[9]++;
+            }
+        });
+
         return {
             labels: Array.from({ length: 10 }, (_, i) => `${i} - ${i+1}`),
             datasets: [
                 {
-                    label: 'Number of students',
-                    data: gradeCounts,
+                    label: 'Pass',
+                    data: passCounts,
                     backgroundColor: '#5D6CC9'
+                },
+                {
+                    label: 'Fail',
+                    data: failCounts,
+                    backgroundColor: '#871751'
                 }
             ]
         };
@@ -212,7 +215,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         plugins: {
             legend: {
                 position: 'right',
-                display: view !== 'metrics',
+                display: true,
                 labels: {
                     font: {
                         size: 16
@@ -249,7 +252,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         },
         scales: {
             x: {
-                stacked: view !== 'metrics',
+                stacked: true,
                 title: {
                     display: true,
                     text: view === 'metrics' ? 'Grade' : '',
@@ -264,7 +267,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 }
             },
             y: {
-                stacked: view !== 'metrics',
+                stacked: true,
                 title: {
                     display: true,
                     text: 'Number of students',
@@ -311,7 +314,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                     <div className={styles.statisticsContainer}>
                         <div className={styles.statisticBox}>
                             <p className={styles.statisticLabel}>Participants</p>
-                            <p className={styles.statisticValue}>{chartData.rawGrades.length}</p>
+                            <p className={styles.statisticValue}>{chartData.rawGrades.Pass.length + chartData.rawGrades.Fail.length}</p>
                         </div>
                         <div className={styles.statisticBox}>
                             <p className={styles.statisticLabel}>Average Grade</p>
@@ -343,8 +346,8 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                     <button className={styles.downloadButton} onClick={downloadChart}>
                         Download Chart
                     </button>
-                    <div className={styles.toggleContainer}>
-                        <label className={styles.toggleLabel}>Less detailed view</label>
+                    {view !== 'metrics' && <div className={styles.toggleContainer}>
+                        <label className={styles.toggleLabel}>Stacked</label>
                         <label className={styles.switch}>
                             <input 
                                 type="checkbox"
@@ -353,8 +356,8 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                             />
                             <span className={`${styles.slider} ${styles.round}`}></span>
                         </label>
-                        <label className={styles.toggleLabel}>More detailed view</label>
-                    </div>
+                        <label className={styles.toggleLabel}>Detailed</label>
+                    </div>}
                     {isDemoMode ? (
                         <button className={styles.downloadButton} onClick={handleExitDemo}>
                             Exit Demo Mode

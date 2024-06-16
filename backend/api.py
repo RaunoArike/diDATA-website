@@ -82,7 +82,6 @@ def demo_view(request):
 
 @api_view(['POST'])
 def verification_view(request):
-    # Retrieve the Authorization header
     auth_header = request.headers.get('Authorization')
     
     if auth_header:
