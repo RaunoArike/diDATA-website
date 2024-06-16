@@ -17,6 +17,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     const [stdDevGrade, setStdDevGrade] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [isDemoMode, setIsDemoMode] = useState(false);
+    const [detailedPartialMarks, setDetailedPartialMarks] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -66,6 +67,28 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         setStdDevGrade(stdDev.toFixed(2));
     };
 
+    const interpolateColor = (startColor, endColor, factor) => {
+        const result = startColor.slice(1).match(/.{2}/g).map((hex, i) => {
+            return Math.round(parseInt(hex, 16) + factor * (parseInt(endColor.slice(1).match(/.{2}/g)[i], 16) - parseInt(hex, 16)));
+        });
+        return `#${result.map(val => val.toString(16).padStart(2, '0')).join('')}`;
+    };
+
+    const processPartialMarks = (partialMarks) => {
+        const interpolatedColors = {};
+        Object.keys(partialMarks).forEach(mark => {
+            const numericMark = parseFloat(mark);
+            let color;
+            if (numericMark <= 0.5) {
+                color = interpolateColor('#FD3C08', '#FFB715', numericMark / 0.5);
+            } else {
+                color = interpolateColor('#FFB715', '#5D6CC9', (numericMark - 0.5) / 0.5);
+            }
+            interpolatedColors[numericMark] = color;
+        });
+        return interpolatedColors;
+    };
+
     const processData = (rawData) => {
         if (!rawData || Object.keys(rawData).length === 0) {
             return { labels: [], datasets: [] };
@@ -76,16 +99,14 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             '# Fully correct',
             '# Incorrect',
             '# Not attempted',
-            '# Not checked',
-            '# Partially correct'
+            '# Not checked'
         ];
     
         const colorMapping = {
             '# Fully correct': '#5D6CC9',
             '# Incorrect': '#FD3C08',
             '# Not attempted': '#871751',
-            '# Not checked': '#B9E5EF',
-            '# Partially correct': '#FFB715'
+            '# Not checked': '#B9E5EF'
         };
     
         const datasets = labels.map(label => ({
@@ -94,8 +115,32 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             backgroundColor: colorMapping[label]
         }));
     
+        if (detailedPartialMarks) {
+            keys.forEach((key, index) => {
+                const partialMarks = rawData[key]['Partial marks'] || {};
+                const sortedMarks = Object.keys(partialMarks).map(Number).sort((a, b) => a - b);
+                sortedMarks.forEach(mark => {
+                    const count = partialMarks[mark];
+                    datasets.push({
+                        label: 'Partial mark',
+                        data: Array(keys.length).fill(0).map((_, i) => i === index ? count : 0),
+                        backgroundColor: mark <= 0.5 
+                            ? interpolateColor('#FD3C08', '#FFB715', mark / 0.5)
+                            : interpolateColor('#FFB715', '#5D6CC9', (mark - 0.5) / 0.5),
+                        mark: mark
+                    });
+                });
+            });
+        } else {
+            datasets.push({
+                label: '# Partially correct',
+                data: keys.map(key => rawData[key]['# Partially correct'] ? rawData[key]['# Partially correct'] : 0),
+                backgroundColor: '#FFB715'
+            });
+        }
+    
         return { labels: keys, datasets };
-    };    
+    };
 
     const processGrades = (grades) => {
         const gradeCounts = Array(10).fill(0);
@@ -171,14 +216,34 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 labels: {
                     font: {
                         size: 16
-                    }
-                }
+                    },
+                    filter: (legendItem) => {
+                        // Hide all partial marks legends
+                        if (legendItem.text.startsWith('Partial mark')) {
+                            return false;
+                        }
+                        return true;
+                    },
+                },
             },
             title: {
                 display: true,
                 text: view === 'metrics' ? `${assignmentName} grade distribution` : `${assignmentName} results by ${view}`,
                 font: {
                     size: 24
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        const datasetLabel = context.dataset.label || '';
+                        const value = context.raw;
+                        const mark = Number(context.dataset.mark);
+                        if (datasetLabel === 'Partial mark') {
+                            return `${datasetLabel}: ${mark.toFixed(2)} (${value} students)`;
+                        }
+                        return `${datasetLabel}: ${value}`;
+                    }
                 }
             }
         },
@@ -216,7 +281,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             }
         }
     };
-
+    
     if (!chartData) return <div>Loading...</div>;
 
     return (
@@ -278,6 +343,18 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                     <button className={styles.downloadButton} onClick={downloadChart}>
                         Download Chart
                     </button>
+                    <div className={styles.toggleContainer}>
+                        <label className={styles.toggleLabel}>Less detailed view</label>
+                        <label className={styles.switch}>
+                            <input 
+                                type="checkbox"
+                                checked={detailedPartialMarks}
+                                onChange={() => setDetailedPartialMarks(!detailedPartialMarks)}
+                            />
+                            <span className={`${styles.slider} ${styles.round}`}></span>
+                        </label>
+                        <label className={styles.toggleLabel}>More detailed view</label>
+                    </div>
                     {isDemoMode ? (
                         <button className={styles.downloadButton} onClick={handleExitDemo}>
                             Exit Demo Mode

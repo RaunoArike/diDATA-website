@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from collections import defaultdict
-from .utils import analyse_by_question, analyse_by_exercise
+from .analyse_data import analyse_by_question, analyse_by_exercise
 
 
 def load_test_data():
@@ -10,7 +10,6 @@ def load_test_data():
     file_path = os.path.join(script_dir, relative_path)
     df = pd.read_csv(file_path)
     df = df.fillna(0)
-    print(df.keys())
     df = df.drop(columns=['Studentnumber'])
 
     res = defaultdict(lambda: defaultdict(list))
@@ -21,5 +20,5 @@ def load_test_data():
         res[key]["scores"] = values
 
     results_by_question = analyse_by_question(res)
-    results_by_exercise = analyse_by_exercise(results_by_question)
+    results_by_exercise = analyse_by_exercise(res)
     return {"results_by_question": results_by_question, "results_by_exercise": results_by_exercise, "grades": [], "assignment_name": "Demo data", "last_updated": "N/A"}

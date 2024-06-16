@@ -1,6 +1,6 @@
 import requests
 import logging
-from .utils import analyse_by_question, analyse_by_exercise
+from .analyse_data import analyse_by_question, analyse_by_exercise
 from rest_framework.response import Response
 from rest_framework import status
 from collections import defaultdict
