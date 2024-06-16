@@ -22,5 +22,4 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('backend.urls_api')),  # This line includes your app's API URLs under the /api/ path
-    path('', include('backend.urls_frontend')),  # This includes your app's frontend URLs at the root
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

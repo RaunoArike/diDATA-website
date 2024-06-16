@@ -41,7 +41,7 @@ def get_assignment_results(course_code, assignment_id, api_key, update=False):
                 break
             prev_id = results_json[0]['id']
             for res in results_json:
-                if res["submitted_at"]:
+                if res.get("submitted_at"):
                     result_ids.append(res["id"])
                     grades.append(res["grade"])
         
@@ -89,7 +89,7 @@ def get_single_assignment_data(course_code, assignment_id, result_ids, api_key, 
                     res_data[submission["numeral"]]["scores"].append(float(submission["score"]) if submission["score"] != None else float('nan'))
         
         results_by_question = analyse_by_question(res_data)
-        results_by_exercise = analyse_by_exercise(res_data)
+        results_by_exercise = analyse_by_exercise(results_by_question)
 
         AssignmentData.objects.update_or_create(
             course_code=course_code,

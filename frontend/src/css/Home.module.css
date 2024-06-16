@@ -1,8 +1,9 @@
 .appContainer {
     display: grid;
     grid-template-rows: auto 1fr;
-    grid-template-columns: 500px 1fr;
-    height: 100%;
+    grid-template-columns: 460px 1fr;
+    background-color: #f9f9f9;
+    height: 90%;
     width: 100%;
   }
   
@@ -19,10 +20,9 @@
   
   .chartContainer {
     grid-row: 2;
-    padding: 20px;
-    background-color: #f9f9f9;
-    margin: 10px;
-    height: 88vh;
+    background-color: #fff;
+    margin: 30px;
+    height: 92vh;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -32,8 +32,10 @@
   .assignmentsContainer {
     display: flex;
     justify-content: space-between;
+    background-color: #f9f9f9;
     flex-grow: 1;
     overflow-y: auto;
+    padding: 10px 100px;
   }
 
   body.dark .appContainer {

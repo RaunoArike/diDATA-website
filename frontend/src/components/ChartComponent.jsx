@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+import { useNavigate } from 'react-router-dom';
 import 'chart.js/auto';
 import styles from '../css/ChartComponent.module.css';
 import { loadCharts } from '../charts';
@@ -15,11 +16,17 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     const [lowestGrade, setLowestGrade] = useState(null);
     const [stdDevGrade, setStdDevGrade] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
+    const [isDemoMode, setIsDemoMode] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const demoMode = localStorage.getItem('demoMode') === 'true';
+        setIsDemoMode(demoMode);
+
         const fetchChartData = async () => {
             try {
-                const resp = await loadCharts(courseCode, assignmentId);
+                const resp = await loadCharts(courseCode, assignmentId, demoMode);
+                
                 const rawExerciseData = resp.results_by_exercise;
                 const rawQuestionData = resp.results_by_question;
                 const rawGrades = resp.grades;
@@ -83,7 +90,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     
         const datasets = labels.map(label => ({
             label: label,
-            data: keys.map(key => rawData[key][label] ? rawData[key][label][0] : 0),
+            data: keys.map(key => rawData[key][label] ? rawData[key][label] : 0),
             backgroundColor: colorMapping[label]
         }));
     
@@ -150,11 +157,17 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         }
     };
 
+    const handleExitDemo = () => {
+        localStorage.removeItem('demoMode');
+        navigate('/login');
+    };
+
     const chartOptions = {
         responsive: true,
         plugins: {
             legend: {
                 position: 'right',
+                display: view !== 'metrics',
                 labels: {
                     font: {
                         size: 16
@@ -209,51 +222,76 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     return (
         <div>
             <div className={styles.menu}>
-                <button className={view === 'metrics' ? styles.active : ''} onClick={() => setView('metrics')}>Metrics</button>
-                <button className={view === 'exercise' ? styles.active : ''} onClick={() => setView('exercise')}>Exercises</button>
-                <button className={view === 'question' ? styles.active : ''} onClick={() => setView('question')}>Questions</button>
-            </div>
-            <div className={styles.statisticsContainer}>
-                <div className={styles.statisticBox}>
-                    <p className={styles.statisticLabel}>Participants</p>
-                    <p className={styles.statisticValue}>{chartData.rawGrades.length}</p>
-                </div>
-                <div className={styles.statisticBox}>
-                    <p className={styles.statisticLabel}>Average Grade</p>
-                    <p className={styles.statisticValue}>{averageGrade}</p>
-                </div>
-                <div className={styles.statisticBox}>
-                    <p className={styles.statisticLabel}>Median Grade</p>
-                    <p className={styles.statisticValue}>{medianGrade}</p>
-                </div>
-                <div className={styles.statisticBox}>
-                    <p className={styles.statisticLabel}>Highest Grade</p>
-                    <p className={styles.statisticValue}>{highestGrade}</p>
-                </div>
-                <div className={styles.statisticBox}>
-                    <p className={styles.statisticLabel}>Lowest Grade</p>
-                    <p className={styles.statisticValue}>{lowestGrade}</p>
-                </div>
-                <div className={styles.statisticBox}>
-                    <p className={styles.statisticLabel}>Standard Deviation</p>
-                    <p className={styles.statisticValue}>{stdDevGrade}</p>
-                </div>
-            </div>
-            <Bar
-                data={view === 'metrics' ? processGrades(chartData.rawGrades) : processData(view === 'exercise' ? chartData.rawExerciseData : chartData.rawQuestionData)}
-                options={chartOptions}
-            />
-            <div className={styles.buttonContainer}>
-                <button className={styles.downloadButton} onClick={downloadChart}>
-                    Download Chart
+                <button 
+                    className={`${styles.menuLabel} ${view === 'metrics' ? styles.active : ''}`} 
+                    onClick={() => setView('metrics')}
+                >
+                    Metrics
                 </button>
-                <button className={styles.downloadButton} onClick={updateChartDataHandler}>
-                    Update Chart
+                <button 
+                    className={`${styles.menuLabel} ${view === 'exercise' ? styles.active : ''}`} 
+                    onClick={() => setView('exercise')}
+                >
+                    Exercises
+                </button>
+                <button 
+                    className={`${styles.menuLabel} ${view === 'question' ? styles.active : ''}`} 
+                    onClick={() => setView('question')}
+                >
+                    Questions
                 </button>
             </div>
-            {lastUpdated && (
-                <p className={styles.lastUpdated}>Last updated:<br></br>{new Date(lastUpdated).toLocaleString()}</p>
-            )}
+            <div className={styles.chartContent}>
+                {!isDemoMode && (
+                    <div className={styles.statisticsContainer}>
+                        <div className={styles.statisticBox}>
+                            <p className={styles.statisticLabel}>Participants</p>
+                            <p className={styles.statisticValue}>{chartData.rawGrades.length}</p>
+                        </div>
+                        <div className={styles.statisticBox}>
+                            <p className={styles.statisticLabel}>Average Grade</p>
+                            <p className={styles.statisticValue}>{averageGrade}</p>
+                        </div>
+                        <div className={styles.statisticBox}>
+                            <p className={styles.statisticLabel}>Median Grade</p>
+                            <p className={styles.statisticValue}>{medianGrade}</p>
+                        </div>
+                        <div className={styles.statisticBox}>
+                            <p className={styles.statisticLabel}>Highest Grade</p>
+                            <p className={styles.statisticValue}>{highestGrade}</p>
+                        </div>
+                        <div className={styles.statisticBox}>
+                            <p className={styles.statisticLabel}>Lowest Grade</p>
+                            <p className={styles.statisticValue}>{lowestGrade}</p>
+                        </div>
+                        <div className={styles.statisticBox}>
+                            <p className={styles.statisticLabel}>Standard Deviation</p>
+                            <p className={styles.statisticValue}>{stdDevGrade}</p>
+                        </div>
+                    </div>
+                )}
+                <Bar
+                    data={view === 'metrics' ? processGrades(chartData.rawGrades) : processData(view === 'exercise' ? chartData.rawExerciseData : chartData.rawQuestionData)}
+                    options={chartOptions}
+                />
+                <div className={styles.buttonContainer}>
+                    <button className={styles.downloadButton} onClick={downloadChart}>
+                        Download Chart
+                    </button>
+                    {isDemoMode ? (
+                        <button className={styles.downloadButton} onClick={handleExitDemo}>
+                            Exit Demo Mode
+                        </button>
+                    ) : (
+                        <button className={styles.downloadButton} onClick={updateChartDataHandler}>
+                            Update Chart
+                        </button>
+                    )}
+                </div>
+                {!isDemoMode && lastUpdated && (
+                    <p className={styles.lastUpdated}>Last updated:<br></br>{new Date(lastUpdated).toLocaleString()}</p>
+                )}
+            </div>
         </div>
     );
 };

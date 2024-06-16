@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from collections import defaultdict
-from .utils import analyse_by_question
+from .utils import analyse_by_question, analyse_by_exercise
 
 
 def load_test_data():
@@ -20,4 +20,6 @@ def load_test_data():
         res[key]["attempted"] = [True] * len(values)
         res[key]["scores"] = values
 
-    return analyse_by_question(res)
+    results_by_question = analyse_by_question(res)
+    results_by_exercise = analyse_by_exercise(results_by_question)
+    return {"results_by_question": results_by_question, "results_by_exercise": results_by_exercise, "grades": [], "assignment_name": "Demo data", "last_updated": "N/A"}

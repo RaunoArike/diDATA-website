@@ -28,7 +28,9 @@ def chart_view(request, course_code, assignment_id, **kwargs):
                 assignment = find_assignment(assignments, assignment_id)
                 result_ids, grades, last_updated = get_assignment_results(course_code, assignment["id"], key, update)
                 results_by_question, results_by_exercise = get_single_assignment_data(course_code, assignment["id"], result_ids, key, update)
-                return Response({"results_by_question": results_by_question, "results_by_exercise": results_by_exercise, "grades": grades, "assignment_name": assignment["name"], "last_updated": last_updated})
+                response = Response({"results_by_question": results_by_question, "results_by_exercise": results_by_exercise, "grades": grades, "assignment_name": assignment["name"], "last_updated": last_updated})
+                print(response)
+                return response
             
             except requests.exceptions.RequestException as e:
                 logger.error(f"Request failed: {e}")
@@ -69,7 +71,7 @@ def courses_view(request):
     
 
 @api_view(['GET'])
-def test_data_view(request):
+def demo_view(request):
     try:
         return Response(load_test_data())
 

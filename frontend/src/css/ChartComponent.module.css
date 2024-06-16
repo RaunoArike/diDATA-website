@@ -1,6 +1,38 @@
-.charts-container {
-    flex: 4;
-    min-width: 300px;
+.chartContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex-grow: 1;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.menu button {
+    background-color: white;
+    border: none;
+    padding: 10px 0;
+    cursor: pointer;
+    flex-grow: 1;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    font-size: 18px;
+}
+
+.menu button.active,
+.menu button:hover {
+    background-color: #eee;
+}
+
+.menuLabel {
+    color: #871751;
 }
 
 .downloadButton, .updateButton {
@@ -95,31 +127,6 @@ input:checked + .slider:before {
     margin: 0 10px;
 }
 
-.menu {
-    display: flex;
-    justify-content: space-around;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ccc;
-    width: 100%;
-    margin-bottom: 10px; /* Slight margin for separation from the chart */
-}
-
-.menu button {
-    background-color: transparent;
-    border: none;
-    padding: 10px 0;
-    cursor: pointer;
-    flex-grow: 1;
-    transition: background-color 0.3s ease;
-    text-align: center;
-    font-size: 16px;
-}
-
-.menu button.active,
-.menu button:hover {
-    background-color: #ddd;
-}
-
 .statisticsContainer {
     display: flex;
     justify-content: center;
@@ -133,6 +140,10 @@ input:checked + .slider:before {
     padding: 10px 20px;
     border-radius: 5px;
     text-align: center;
+}
+
+.statisticBox:hover {
+    background-color: #eee;
 }
 
 .statisticLabel {
