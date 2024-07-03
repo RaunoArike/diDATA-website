@@ -1,6 +1,6 @@
 # diDATA
 
-This repository contains the source code of diDATA. diDATA is a web application that makes it easier for professors, course managers and lecturers to analyse the results of the students by providing detailed visualisations of these results. It has been developed for TU Delft under the PRIMECH project and builds upon the functionalities offered by the ANS platform. In comparison to ANS, diDATA offers a much more detailed view of ...
+This repository contains the source code of diDATA. diDATA is a web application that makes it easier for professors, course managers and lecturers to analyse the results of the students by providing detailed visualisations of these results. It has been developed for TU Delft under the PRIMECH project and builds upon the functionalities offered by the ANS platform. In comparison to ANS, diDATA offers a much more detailed view of the comparative overall performance of the students on individual questions and exercises.
 
 ## Structure of the Application
 
@@ -10,11 +10,82 @@ The backend uses a PostgreSQL database. This database is used to store the assig
 
 The repository is structured as follows:
 ```
-/frontend
---/
+backend/
+│
+├── __pycache__/
+│
+├── migrations/
+│   └── __init__.py
+│
+├── __init__.py
+├── admin.py
+├── analyse_data.py
+├── api.py
+├── apps.py
+├── get_assignments.py
+├── get_charts.py
+├── get_courses.py
+├── get_test_data.py
+├── models.py
+├── urls_api.py
+├── verify.py
 
-/backend
+config/
+├── __pycache__/
+├── __init__.py
+├── asgi.py
+├── db.sqlite3
+├── settings.py
+├── urls.py
+└── wsgi.py
+
+frontend/
+│
+├── build/
+│
+├── node_modules/
+│
+├── public/
+├── img/
+│   │   ├── AssignmentList.jsx
+│   │   ├── AssignmentSelector.jsx
+│   │   ├── ChartComponent.jsx
+│   ├── index.html
+│
+├── src/
+│   ├── components/
+│   │   ├── AssignmentList.jsx
+│   │   ├── AssignmentSelector.jsx
+│   │   ├── ChartComponent.jsx
+│   │   ├── CourseSelector.jsx
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Profile.jsx
+│   │   └── Settings.jsx
+│   │
+│   ├── css/
+│   │   ├── AssignmentList.module.css
+│   │   ├── ChartComponent.module.css
+│   │   ├── Home.module.css
+│   │   ├── Login.module.css
+│   │   ├── Navbar.module.css
+│   │   ├── Selector.module.css
+│   │   └── Settings.module.css
+│   │
+│   ├── App.css
+│   ├── App.jsx
+│   ├── assignments.js
+│   ├── charts.js
+│   ├── courses.js
+│   ├── index.css
+│   ├── index.js
+│   ├── index.jsx
+│   ├── reportWebVitals.js
+│   └── update.js
 ```
+
+The backend directory contains all backend logic, organized to handle different aspects such as database migrations, application settings, data analysis, API endpoints, and URL routing. Additionally, the Django backend requires a `config` directory that contains the Django settings and URL routing files. The frontend directory holds the React application files, with the `src` directory containing the main application logic and components. The `public` directory contains the HTML file that serves as the entry point for the React application. The `build` directory is generated when the React application is built for production.
 
 To locally run the frontend, enter the following commands:
 ```
@@ -22,26 +93,63 @@ cd frontend
 npm start
 ```
 
-To locally run the backend, enter the following commands in a separate terminal window:
+To locally run the backend, enter the following commands in a separate terminal window (this should be done inside the application's root directory):
 ```
-cd backend
 python manage.py runserver
 ```
 
-To locally set up the database, enter the following commands:
+To locally set up the database:
+1. Ensure that you have PostgreSQL installed on your system.
+2. Create a new database in PostgreSQL by running the following command in the terminal:
 ```
-makemigrations etc
+sudo -u postgres psql
+```
+3. In the PostgreSQL shell, run the following commands to create a new database:
+```
+CREATE USER didata_user WITH PASSWORD 'your_password';
+CREATE DATABASE didata_db OWNER didata_user;
+GRANT ALL PRIVILEGES ON DATABASE didata_db TO didata_user;
+```
+The Django app has already been configured to use the database with the name `didata_db` and the username `didata_user`.
+4. Run the following command in the root directory of diDATA to apply the migrations and create the necessary tables in the database:
+```
+python manage.py makemigrations
+python manage.py migrate
 ```
 
 Before running those commands, ensure that you have installed all the necessary dependencies. These dependencies are descibed in the next section.
 
 ## Dependencies
 
-- Python 3 installed
-- NPM installed
-- all of the backend deps can be installed using pip install -r requirements.txt
-- all of the frontend deps can be installed using ...
-- Postgres installed
+To run diDATA locally, you need to install several dependencies for both the backend and frontend. Follow the steps below:
+
+### Backend Dependencies
+
+1. **Python and Pip:**
+   Ensure that Python 3 and pip are installed on your system. You can download Python from the [official website](https://www.python.org/downloads/).
+
+2. **Install Backend Dependencies:**
+   Run the following command in the root directory to install all the required Python packages:
+
+   ```bash
+   pip install -r requirements.txt
+    ```
+
+### Frontend Dependencies
+
+1. **Node.js and npm:**
+   Ensure that Node.js and npm are installed on your system. You can download and install them from the [official Node.js website](https://nodejs.org/en/download/).
+
+2. **Install Frontend Dependencies:**
+   Navigate to the `frontend` directory and run the following command to install all the required Node.js packages:
+
+   ```bash
+   npm install
+    ```
+
+### Database Dependencies
+
+You need to have PostgreSQL installed on your system. You can download and install it from the [official PostgreSQL website](https://www.postgresql.org/download/).
 
 ## An Overview of the Functionalities
 
@@ -91,9 +199,9 @@ The Questions page also has a detailed view:
 
 Each view includes two buttons: the Download button and the Update button (not shown in the demo mode). The Download button enables the user to download the currently opened chart as a PNG file. The Update button enables the user to make an API call to ANS to refresh the data, since by default, the data will be served from diDATA's own database. For live assignments, the data stored in diDATA's database can be outdated and the Update button enables the retrieval of the latest results.
 
-This functionality is useful because ...
-
 Finally, the application also includes a Settings page. This page gives the user the opportunity to view their API key, to remove it from the system, and to enable the dark mode.
+
+![image](./readme_images/settings.png)
 
 ## Future Improvements
 
