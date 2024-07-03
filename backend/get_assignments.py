@@ -1,12 +1,11 @@
 import requests
 import logging
-from django.conf import settings
 from rest_framework.response import Response
-from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
 
+# Queries a list of assignments corresponding to course_code from ANS
 def get_assignment_list(course_code, api_key):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
     try:

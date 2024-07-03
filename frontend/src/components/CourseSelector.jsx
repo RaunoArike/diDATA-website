@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchCourses } from '../courses';
 import styles from '../css/Selector.module.css';
 
+// This method enables showing the courses managed by a user in a dropdown menu
 const CourseSelector = ({ onSelectCourse }) => {
     const [courses, setCourses] = useState([]);
 

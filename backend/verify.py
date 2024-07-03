@@ -2,6 +2,8 @@ import requests
 from rest_framework.response import Response
 
 
+# Verifies the user's API key by checking whether ANS accepts an API call using this key
+# This is not the cleanest solution; I didn't find an explicit verification endpoint in ANS API docs, but perhaps there's another option for doing this in a more elegant way
 def verify_api_key(key):
     header = {"accept": "application/json", "Authorization": f"Bearer {key}"}
     try:

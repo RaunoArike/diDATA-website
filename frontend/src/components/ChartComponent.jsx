@@ -28,6 +28,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             try {
                 const resp = await loadCharts(courseCode, assignmentId, demoMode);
                 
+                // resp is a dictionary with 5 keys: results_by_exercise, results_by_question, grades, assignment_name, and last_updated
                 const rawExerciseData = resp.results_by_exercise;
                 const rawQuestionData = resp.results_by_question;
                 const rawGrades = resp.grades;
@@ -60,7 +61,8 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
 
         const variance = allGrades.reduce((sum, grade) => sum + Math.pow(Number(grade) - avg, 2), 0) / allGrades.length;
         const stdDev = Math.sqrt(variance);
-
+        
+        // all statistics fields have 2 decimal points
         setAverageGrade(avg.toFixed(2));
         setMedianGrade(median.toFixed(2));
         setHighestGrade(highest.toFixed(2));
@@ -68,6 +70,9 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         setStdDevGrade(stdDev.toFixed(2));
     };
 
+    // This method interpolates the color of the chart bar between two colours
+    // This is necessary for the gradient mode where there are many possible grades between 0 and 1
+    // In those cases, we want to assign the colour based on how close the grade was to fully incorrect or fully correct
     const interpolateColor = (startColor, endColor, factor) => {
         const result = startColor.slice(1).match(/.{2}/g).map((hex, i) => {
             return Math.round(parseInt(hex, 16) + factor * (parseInt(endColor.slice(1).match(/.{2}/g)[i], 16) - parseInt(hex, 16)));
@@ -76,23 +81,24 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
     };
 
     const processData = (rawData) => {
+        // If there's no data, return an empty chart
         if (!rawData || Object.keys(rawData).length === 0) {
             return { labels: [], datasets: [] };
         }
     
         const keys = Object.keys(rawData);
         const labels = [
+            '# Fully incorrect',
             '# Fully correct',
-            '# Incorrect',
             '# Not attempted',
             '# Not checked'
         ];
     
         const colorMapping = {
-            '# Fully correct': '#5D6CC9',
-            '# Incorrect': '#FD3C08',
+            '# Fully incorrect': '#FD3C08',
+            '# Fully correct': '#BAEFB9',
             '# Not attempted': '#871751',
-            '# Not checked': '#B9E5EF'
+            '# Not checked': '#5D6CC9'
         };
     
         const datasets = labels.map(label => ({
@@ -100,25 +106,30 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
             data: keys.map(key => rawData[key][label] ? rawData[key][label] : 0),
             backgroundColor: colorMapping[label]
         }));
-    
+        
+        // The chart has two modes: 'Stacked' and 'Detailed'
+        // In the 'Stacked' mode, all of the partial marks (ie, marks between 0 and 1) are merged together into a single yellow bar
+        // In the 'Detailed' mode, each different partial mark has its own bar (eg, there's a bar for grade 0.2, a bar for grade 0.4, etc)
+        // If the grade is between 0 and 0.5, the colour of the bar is interpolated between red and yellow based on how close it is to either of those values
+        // If the grade is between 0.5 and 1, the colour of the bar is interpolated between yellow and red
         if (detailedPartialMarks) {
             keys.forEach((key, index) => {
                 const partialMarks = rawData[key]['Partial marks'] || {};
-                const sortedMarks = Object.keys(partialMarks).map(Number).sort((a, b) => a - b);
+                const sortedMarks = Object.keys(partialMarks).map(Number).sort((a, b) => b - a);
                 sortedMarks.forEach(mark => {
                     const count = partialMarks[mark];
-                    datasets.push({
+                    datasets.splice(1, 0, {
                         label: 'Partial mark',
                         data: Array(keys.length).fill(0).map((_, i) => i === index ? count : 0),
                         backgroundColor: mark <= 0.5 
                             ? interpolateColor('#FD3C08', '#FFB715', mark / 0.5)
-                            : interpolateColor('#FFB715', '#5D6CC9', (mark - 0.5) / 0.5),
+                            : interpolateColor('#FFB715', '#BAEFB9', (mark - 0.5) / 0.5),
                         mark: mark
                     });
                 });
             });
         } else {
-            datasets.push({
+            datasets.splice(1, 0, {
                 label: '# Partially correct',
                 data: keys.map(key => rawData[key]['# Partially correct'] ? rawData[key]['# Partially correct'] : 0),
                 backgroundColor: '#FFB715'
@@ -128,6 +139,9 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         return { labels: keys, datasets };
     };
 
+    // There are 10 different bins for grades: grades between 0 and 1, grades between 1 and 2, etc
+    // Since 5 to 6 is the only grade range where some of the grades correspond to a Fail and some to a Pass, the bars corresponding to fails and bars corresponding to passes are stacked on top of each other in that range
+    // No other range has stacked bars
     const processGrades = (grades) => {
         const passCounts = Array(10).fill(0);
         const failCounts = Array(10).fill(0);
@@ -167,6 +181,7 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
         };
     };
 
+    // This method enables downloading the currently shown chart as a .png image
     const downloadChart = () => {
         const chart = document.getElementsByTagName('canvas')[0];
         const link = document.createElement('a');
@@ -310,34 +325,32 @@ const ChartComponent = ({ courseCode, assignmentId }) => {
                 </button>
             </div>
             <div className={styles.chartContent}>
-                {!isDemoMode && (
-                    <div className={styles.statisticsContainer}>
-                        <div className={styles.statisticBox}>
-                            <p className={styles.statisticLabel}>Participants</p>
-                            <p className={styles.statisticValue}>{chartData.rawGrades.Pass.length + chartData.rawGrades.Fail.length}</p>
-                        </div>
-                        <div className={styles.statisticBox}>
-                            <p className={styles.statisticLabel}>Average Grade</p>
-                            <p className={styles.statisticValue}>{averageGrade}</p>
-                        </div>
-                        <div className={styles.statisticBox}>
-                            <p className={styles.statisticLabel}>Median Grade</p>
-                            <p className={styles.statisticValue}>{medianGrade}</p>
-                        </div>
-                        <div className={styles.statisticBox}>
-                            <p className={styles.statisticLabel}>Highest Grade</p>
-                            <p className={styles.statisticValue}>{highestGrade}</p>
-                        </div>
-                        <div className={styles.statisticBox}>
-                            <p className={styles.statisticLabel}>Lowest Grade</p>
-                            <p className={styles.statisticValue}>{lowestGrade}</p>
-                        </div>
-                        <div className={styles.statisticBox}>
-                            <p className={styles.statisticLabel}>Standard Deviation</p>
-                            <p className={styles.statisticValue}>{stdDevGrade}</p>
-                        </div>
+                <div className={styles.statisticsContainer}>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Participants</p>
+                        <p className={styles.statisticValue}>{chartData.rawGrades.Pass.length + chartData.rawGrades.Fail.length}</p>
                     </div>
-                )}
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Average Grade</p>
+                        <p className={styles.statisticValue}>{averageGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Median Grade</p>
+                        <p className={styles.statisticValue}>{medianGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Highest Grade</p>
+                        <p className={styles.statisticValue}>{highestGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Lowest Grade</p>
+                        <p className={styles.statisticValue}>{lowestGrade}</p>
+                    </div>
+                    <div className={styles.statisticBox}>
+                        <p className={styles.statisticLabel}>Standard Deviation</p>
+                        <p className={styles.statisticValue}>{stdDevGrade}</p>
+                    </div>
+                </div>
                 <Bar
                     data={view === 'metrics' ? processGrades(chartData.rawGrades) : processData(view === 'exercise' ? chartData.rawExerciseData : chartData.rawQuestionData)}
                     options={chartOptions}

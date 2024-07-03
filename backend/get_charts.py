@@ -19,15 +19,20 @@ def find_assignment(assignment_list, assignment_id):
     return Response({'error': 'Failed to retrieve assignment with the given id'}, status=500)
 
 
+# Queries the results for a specific assignment from ANS
+# The results are returned as a list where every entry corresponds to one student
+# The querying logic is paginated to make sure all the data is retrieved even when the course has a very large number of students
+# Returns a list containing the ids of each submission, a list of grades, and the time of last update of the returned data
+# If the data is available in the database and the user hasn't requested to update it, the data is returned from the database and no API call is performed
 def get_assignment_results(course_code, assignment_id, api_key, update=False):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 
-    # if not update:
-    #     try:
-    #         stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
-    #         return stored_data.get_result_ids(), stored_data.get_grades(), stored_data.last_updated
-    #     except AssignmentResults.DoesNotExist:
-    #         pass
+    if not update:
+        try:
+            stored_data = AssignmentResults.objects.get(course_code=course_code, assignment_id=assignment_id)
+            return stored_data.get_result_ids(), stored_data.get_grades(), stored_data.last_updated
+        except AssignmentResults.DoesNotExist:
+            pass
 
     try:
         prev_id = ""
@@ -70,6 +75,8 @@ def get_assignment_results(course_code, assignment_id, api_key, update=False):
     
 
 
+# Given a course, an assignment, and the ids of the student submissions, returns the detailed scores of the submissions by question and by exercise
+# If the data is available in the database and the user hasn't requested to update it, the data is returned from the database and no API call is performed
 def get_single_assignment_data(course_code, assignment_id, result_ids, api_key, update=False):
     header = {"accept": "application/json", "Authorization": f"Bearer {api_key}"}
 

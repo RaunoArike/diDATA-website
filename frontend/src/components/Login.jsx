@@ -25,6 +25,9 @@ const Login = () => {
                 headers: headers,
             });
 
+            // The API key is currently stored in the local storage of the user's browser
+            // A safer solution would be to store the API key in the backend and a user id in local storage that enables the identification of the user to retrieve the API key in the backend
+            // However, this requires the creation of user profiles, which will not be finished before integration with SSO
             if (response.ok) {
                 localStorage.setItem('apiKey', apiKey);
                 localStorage.setItem('demoMode', 'false');
@@ -37,6 +40,8 @@ const Login = () => {
         }
     };
 
+    // There is a demo mode where the charts are shown using fake data rather than real student data, eg for teachers who want to get a flavour of the app but don't have an API key yet
+    // This function enables navigating to the demo mode
     const handleDemo = () => {
         localStorage.setItem('demoMode', 'true');
         navigate('/');

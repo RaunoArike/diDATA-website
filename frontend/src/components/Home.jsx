@@ -28,16 +28,17 @@ const Home = () => {
     }
   }, [navigate]);
 
+  // display the 5 most recent assignments and up to 5 live assignments for the selected course
   const handleSelectCourse = async (courseCode) => {
     setSelectedCourse(courseCode);
     setSelectedAssignment('');
 
     const data = await fetchAssignments(courseCode);
     const live = data.filter(a => new Date(a.end_at) > new Date());
-    const recent = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0, 5);
+    const recent = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     setLiveAssignments(live.slice(0, 5));
-    setRecentAssignments(recent);
+    setRecentAssignments(recent.slice(0, 5));
   };
 
   const handleSelectAssignment = (assignmentId) => {

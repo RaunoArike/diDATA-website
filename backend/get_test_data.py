@@ -4,6 +4,7 @@ from collections import defaultdict
 from .analyse_data import analyse_by_question, analyse_by_exercise
 
 
+# Loads fake data, which is displayed for demo purposes to teachers who wish to use the app but don't have an ANS API key yet
 def load_test_data():
     script_dir = os.path.dirname(__file__)
     relative_path = '../test_data/test.csv'
@@ -21,4 +22,4 @@ def load_test_data():
 
     results_by_question = analyse_by_question(res)
     results_by_exercise = analyse_by_exercise(res)
-    return {"results_by_question": results_by_question, "results_by_exercise": results_by_exercise, "grades": [], "assignment_name": "Demo data", "last_updated": "N/A"}
+    return {"results_by_question": results_by_question, "results_by_exercise": results_by_exercise, "grades": {"Pass": [5.75, 8.4, 6.3], "Fail": [2.4, 3.0, 5.0]}, "assignment_name": "Demo data", "last_updated": "N/A"}

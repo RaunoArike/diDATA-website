@@ -12,6 +12,8 @@ const Settings = () => {
         setApiKeyVisible(!apiKeyVisible);
     };
 
+    // removes the user's API key from local storage
+    // should be changed in the future when the API key is not stored in local storage anymore
     const removeApiKey = () => {
         localStorage.removeItem('apiKey');
         setApiKey('');

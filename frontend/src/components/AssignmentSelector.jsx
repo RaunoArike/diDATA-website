@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchAssignments } from '../assignments';
 import styles from '../css/Selector.module.css';
 
+// This method enables displaying the assignments that correspond to a course chosen by the user in a dropdown menu
 const AssignmentSelector = ({ courseCode, onSelectAssignment }) => {
     const [assignments, setAssignments] = useState([]);
 

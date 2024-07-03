@@ -1,6 +1,8 @@
 from django.urls import path
 from .api import chart_view, assignments_view, courses_view, verification_view, demo_view
 
+
+# contains the URLs to which the backend supports API calls
 urlpatterns = [
     path('courses/<int:course_code>/assignments/<int:assignment_id>/', chart_view, name='chart_data'),
     path('courses/<int:course_code>/assignments/<int:assignment_id>/update/', chart_view, {'update': True}, name='chart_data_update'),
