@@ -1,43 +1,19 @@
-.link, .courseSelect, .assignmentSelect {
-    display: block;
-    margin-bottom: 20px;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
+.courseSelect,
+.assignmentSelect {
+  width: 300px; /* Set a fixed width */
+  padding: 8px; /* Add padding for better appearance */
+  font-size: 14px; /* Adjust font size */
+  text-overflow: ellipsis; /* Handle overflow with ellipsis */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflow */
 }
 
-.link:hover, .courseSelect:hover, .assignmentSelect:hover {
-    color: #5D6CC9;
+.courseSelect {
+  margin-bottom: 10px; /* Add margin between selectors */
 }
 
-.dark .loginContainer {
-    background-color: #333;
-}
-
-.dark .apiKeyInput {
-    background-color: #444;
-    border: 1px solid #555;
-    color: #f5f5f5;
-}
-
-.dark .submitButton {
-    background-color: #8797ed;
-}
-
-.dark .submitButton:hover {
-    background-color: #0056b3;
-}
-
-.dark .infoButton {
-    background-color: #8797ed;
-}
-
-.dark .infoTooltip {
-    background-color: #444;
-    border: 1px solid #555;
-    color: #f5f5f5;
-}
-
-.dark .errorMessage {
-    color: #b83870;
+/* Additional styles for the dropdown menu to improve appearance */
+.courseSelect option,
+.assignmentSelect option {
+  font-size: 12px; /* Adjust font size for options */
 }

@@ -1,14 +1,22 @@
 from collections import defaultdict, Counter
 
 
-# Takes the raw question data and converts it into a dictionary that contains the following elements for each question in an exercise:
-# - the number of unchecked submissions by students
-# - the number of submissions where the question was left unattempted
-# - the number of incorrect submissions
-# - the number of partially correct submissions
-# - the number of fully correct submissions
-# - an array that contains the exact scores assigned to all partially correct submissions
 def analyse_by_question(questions_raw):
+    """
+    Analyzes raw question data and returns a dictionary with statistics for each question.
+
+    Args:
+        questions_raw (dict): The raw data for the questions.
+
+    Returns:
+        dict: A dictionary containing the following statistics for each question:
+            - '# Not checked': Number of unchecked submissions.
+            - '# Not attempted': Number of unattempted submissions.
+            - '# Fully incorrect': Number of fully incorrect submissions.
+            - '# Partially correct': Number of partially correct submissions.
+            - '# Fully correct': Number of fully correct submissions.
+            - 'Partial marks': A dictionary with scores of partially correct submissions.
+    """
     res = {}
 
     for question_key, question_data in questions_raw.items():
@@ -29,14 +37,22 @@ def analyse_by_question(questions_raw):
     return res
 
 
-# Takes the raw question data and converts it into a dictionary that contains the following elements for each exercise:
-# - the total number of unchecked questions across all questions categorized under the exercise across all submissions
-# - the total number of unattempted questions across all questions categorized under the exercise across all submissions
-# - the number of students who got all of their attempted and checked questions correct across the exercise
-# - the number of students who got all of their attempted and checked questions incorrect across the exercise
-# - the number of students who got some of their attempted and checked questions correct and some incorrect across the exercise
-# - an array that contains the average marks of the students who got some of the questions correct and some incorrect across the exercise
 def analyse_by_exercise(questions_raw):
+    """
+    Analyzes raw question data and returns a dictionary with statistics for each exercise.
+
+    Args:
+        questions_raw (dict): The raw data for the questions.
+
+    Returns:
+        dict: A dictionary containing the following statistics for each exercise:
+            - '# Not checked': Total number of unchecked questions.
+            - '# Not attempted': Total number of unattempted questions.
+            - '# Fully correct': Number of students with all correct attempted and checked questions.
+            - '# Fully incorrect': Number of students with all incorrect attempted and checked questions.
+            - '# Partially correct': Number of students with some correct and some incorrect attempted and checked questions.
+            - 'Partial marks': A dictionary with average scores of partially correct students.
+    """
     aggr_results = defaultdict(lambda: {
         '# Not checked': 0, 
         '# Not attempted': 0,
