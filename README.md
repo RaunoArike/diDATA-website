@@ -1,91 +1,10 @@
 # diDATA
 
-This repository contains the source code of diDATA. diDATA is a web application that makes it easier for professors, course managers and lecturers to analyse the results of the students by providing detailed visualisations of these results. It has been developed for TU Delft under the PRIMECH project and builds upon the functionalities offered by the ANS platform. In comparison to ANS, diDATA offers a much more detailed view of the comparative overall performance of the students on individual questions and exercises.
+diDATA is a web application that makes it easier for professors, course managers and lecturers to analyse the results of the students by providing detailed visualisations of these results. It has been developed for TU Delft under the PRIMECH project and builds upon the functionalities offered by the ANS platform. In comparison to ANS, diDATA offers a much more detailed view of the comparative overall performance of the students on individual questions and exercises. This is an early beta version of the app.
 
 ## Structure of the Application
 
 The application uses a Django backend and a React frontend. The responsibilities of the backend and frontend are fully separated and both can run fully independently. The frontend and backend communicate through API calls and the responses are returned to the frontend as JSON messages.
-
-The backend uses a PostgreSQL database. This database is used to store the assignment data queried from ANS to avoid repeated API calls for large amounts of assignment data.
-
-The repository is structured as follows:
-```
-backend/
-│
-├── __pycache__/
-│
-├── migrations/
-│   └── __init__.py
-│
-├── __init__.py
-├── admin.py
-├── analyse_data.py
-├── api.py
-├── apps.py
-├── get_assignments.py
-├── get_charts.py
-├── get_courses.py
-├── get_test_data.py
-├── models.py
-├── urls_api.py
-├── verify.py
-
-config/
-├── __pycache__/
-├── __init__.py
-├── asgi.py
-├── db.sqlite3
-├── settings.py
-├── urls.py
-└── wsgi.py
-
-frontend/
-│
-├── build/
-│
-├── node_modules/
-│
-├── public/
-├── img/
-│   │   ├── AssignmentList.jsx
-│   │   ├── AssignmentSelector.jsx
-│   │   ├── ChartComponent.jsx
-│   ├── index.html
-│
-├── src/
-│   ├── components/
-│   │   ├── AssignmentList.jsx
-│   │   ├── AssignmentSelector.jsx
-│   │   ├── ChartComponent.jsx
-│   │   ├── CourseSelector.jsx
-│   │   ├── Home.jsx
-│   │   ├── Login.jsx
-│   │   ├── Navbar.jsx
-│   │   ├── Profile.jsx
-│   │   └── Settings.jsx
-│   │
-│   ├── css/
-│   │   ├── AssignmentList.module.css
-│   │   ├── ChartComponent.module.css
-│   │   ├── Home.module.css
-│   │   ├── Login.module.css
-│   │   ├── Navbar.module.css
-│   │   ├── Selector.module.css
-│   │   └── Settings.module.css
-│   │
-│   ├── App.css
-│   ├── App.jsx
-│   ├── assignments.js
-│   ├── charts.js
-│   ├── courses.js
-│   ├── index.css
-│   ├── index.js
-│   ├── index.jsx
-│   ├── reportWebVitals.js
-│   └── update.js
-```
-
-The backend directory contains all backend logic, organized to handle different aspects such as database migrations, application settings, data analysis, API endpoints, and URL routing. Additionally, the Django backend requires a `config` directory that contains the Django settings and URL routing files. The frontend directory holds the React application files, with the `src` directory containing the main application logic and components. The `public` directory contains the HTML file that serves as the entry point for the React application. The `build` directory is generated when the React application is built for production.
 
 To locally run the frontend, enter the following commands:
 ```
@@ -106,11 +25,10 @@ sudo -u postgres psql
 ```
 3. In the PostgreSQL shell, run the following commands to create a new database:
 ```
-CREATE USER didata_user WITH PASSWORD 'your_password';
-CREATE DATABASE didata_db OWNER didata_user;
-GRANT ALL PRIVILEGES ON DATABASE didata_db TO didata_user;
+CREATE USER 'your_username' WITH PASSWORD 'your_password';
+CREATE DATABASE 'db_name' OWNER 'your_username';
+GRANT ALL PRIVILEGES ON DATABASE 'db_name' TO 'your_username';
 ```
-The Django app has already been configured to use the database with the name `didata_db` and the username `didata_user`.
 4. Run the following command in the root directory of diDATA to apply the migrations and create the necessary tables in the database:
 ```
 python manage.py makemigrations
@@ -118,38 +36,6 @@ python manage.py migrate
 ```
 
 Before running those commands, ensure that you have installed all the necessary dependencies. These dependencies are descibed in the next section.
-
-## Dependencies
-
-To run diDATA locally, you need to install several dependencies for both the backend and frontend. Follow the steps below:
-
-### Backend Dependencies
-
-1. **Python and Pip:**
-   Ensure that Python 3 and pip are installed on your system. You can download Python from the [official website](https://www.python.org/downloads/).
-
-2. **Install Backend Dependencies:**
-   Run the following command in the root directory to install all the required Python packages:
-
-   ```bash
-   pip install -r requirements.txt
-    ```
-
-### Frontend Dependencies
-
-1. **Node.js and npm:**
-   Ensure that Node.js and npm are installed on your system. You can download and install them from the [official Node.js website](https://nodejs.org/en/download/).
-
-2. **Install Frontend Dependencies:**
-   Navigate to the `frontend` directory and run the following command to install all the required Node.js packages:
-
-   ```bash
-   npm install
-    ```
-
-### Database Dependencies
-
-You need to have PostgreSQL installed on your system. You can download and install it from the [official PostgreSQL website](https://www.postgresql.org/download/).
 
 ## An Overview of the Functionalities
 
@@ -203,9 +89,34 @@ Finally, the application also includes a Settings page. This page gives the user
 
 ![image](./readme_images/settings.png)
 
-## Future Improvements
+## Dependencies
 
-- The most important improvement is to integrate the app with the TU Delft Single Sign-On system, which will enable its deployment on TU Delft's servers. Alongside this improvement, user profiles should be created and user ANS API keys should be stored in a safer way than now - currently, they are stored in the local storage of the users' browsers.
-- The charts could have an 'Explain' button which gives a detailed overview of what the charts exactly show, how the 'Stacked' and 'Detailed' modes work, how the scores for the individual questions are aggregated in the Exercise view, etc
-- There could be a button for submitting feature requests that lecturers can use to suggest improvements to the app
-- The dropdown menus for choosing the courses and assignments could include slightly more detailed information about the courses and assignments, such as the year and quarter in which the course was run. In case it appears during deployment that some lecturers have a very long list of courses to choose from, another dropdown menu could be added that first enables the users to choose the year when the course was run.
+To run diDATA locally, you need to install several dependencies for both the backend and frontend. Follow the steps below:
+
+### Backend Dependencies
+
+1. **Python and Pip:**
+   Ensure that Python 3 and pip are installed on your system. You can download Python from the [official website](https://www.python.org/downloads/).
+
+2. **Install Backend Dependencies:**
+   Run the following command in the root directory to install all the required Python packages:
+
+   ```bash
+   pip install -r requirements.txt
+    ```
+
+### Frontend Dependencies
+
+1. **Node.js and npm:**
+   Ensure that Node.js and npm are installed on your system. You can download and install them from the [official Node.js website](https://nodejs.org/en/download/).
+
+2. **Install Frontend Dependencies:**
+   Navigate to the `frontend` directory and run the following command to install all the required Node.js packages:
+
+   ```bash
+   npm install
+    ```
+
+### Database Dependencies
+
+You need to have PostgreSQL installed on your system. You can download and install it from the [official PostgreSQL website](https://www.postgresql.org/download/).
